@@ -1,0 +1,26 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.example.des808.tcp_ip_client.tcp_ip_client">
+
+
+    <item
+        android:id="@+id/action_set_andromeda"
+        android:checkable="true"
+        android:title="@string/andromeda"
+        android:visible="true"
+        app:actionLayout="@layout/action_layout_styled_checkbox"
+        app:showAsAction="never" />
+    <!--app:actionLayout="@layout/switch_item"-->
+
+
+    <!-- <item
+        android:id="@+id/action_settings"
+        android:enabled="true"
+        android:orderInCategory="100"
+        android:title="@string/settings"
+        android:visible="true"
+        app:showAsAction="never" />-->
+
+
+</menu>

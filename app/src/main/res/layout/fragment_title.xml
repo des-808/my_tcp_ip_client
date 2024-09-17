@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/Root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/backGroundMyApp"
+    android:gravity="start"
+    android:orientation="vertical"
+    android:visibility="visible"
+    tools:context=".fragment_titles"
+    tools:layout_editor_absoluteY="81dp">
+
+    <LinearLayout
+        android:id="@+id/Root_2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="start"
+        android:orientation="horizontal"
+        android:visibility="visible">
+
+        <TextView
+            android:id="@+id/serverlist_text"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="@string/serverlist"
+            android:textAlignment="center"
+            android:textColor="@color/colorPrimaryDark"
+            android:textSize="36sp"
+            android:textStyle="italic"
+            android:visibility="visible"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.0" />
+
+        <Button
+            android:id="@+id/but_add"
+            style="@android:style/Widget.Button.Inset"
+            android:layout_width="90dp"
+            android:layout_height="match_parent"
+            android:elevation="24dp"
+            android:onClick="onClickAdd"
+            android:text="@string/add"
+            android:visibility="visible" />
+
+
+    </LinearLayout>
+
+  <!-- <LinearLayout
+        android:id="@+id/xzzzz"
+        android:layout_width="match_parent"
+        android:layout_height="66dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/textViewName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+
+        <TextView
+            android:id="@+id/textViewIpAdr"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+
+        <TextView
+            android:id="@+id/textViewPort"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+
+        <Button
+            android:id="@+id/btnSend"
+            style="@android:style/Widget.Button.Inset"
+            android:layout_width="90dp"
+            android:layout_height="match_parent"
+            android:elevation="24dp"
+            android:onClick="onClickSend"
+            android:text="@string/Seend"
+            android:visibility="visible" />
+    </LinearLayout>-->
+
+    <ListView
+        android:id="@+id/list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:headerDividersEnabled="true"
+        android:scrollbars="horizontal"
+        android:visibility="visible" />
+</LinearLayout>

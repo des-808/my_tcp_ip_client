@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/Root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/backGroundMyApp"
+    android:gravity="start"
+    android:orientation="vertical"
+    android:visibility="visible"
+    tools:context=".fragment_titles"
+    tools:layout_editor_absoluteY="81dp">
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="end"
+        android:orientation="vertical"
+        android:visibility="visible">
+
+        <TextView
+            android:id="@+id/connect_text"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:background="@android:color/background_dark"
+            android:textAlignment="textStart"
+            android:textAllCaps="false"
+            android:textAppearance="@style/TextAppearance.Compat.Notification.Title"
+            android:textColor="@android:color/holo_green_dark"
+            android:textSize="14sp"
+            android:textStyle="bold|italic"
+            android:visibility="visible" />
+
+       <!-- <TextView
+            android:id="@+id/E__text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@android:color/background_dark"
+            android:textAlignment="textStart"
+            android:textAllCaps="false"
+            android:textAppearance="@style/TextAppearance.Compat.Notification.Title"
+            android:textColor="@android:color/holo_green_dark"
+            android:textSize="24sp"
+            android:textStyle="bold|italic"
+            android:visibility="visible" />-->
+
+        <!--<TextView
+            android:id="@+id/E__textInt"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@android:color/background_dark"
+            android:textAlignment="textStart"
+            android:textAllCaps="false"
+            android:textAppearance="@style/TextAppearance.Compat.Notification.Title"
+            android:textColor="@android:color/holo_green_dark"
+            android:textSize="24sp"
+            android:textStyle="bold|italic"
+            android:visibility="visible" />-->
+
+       <!-- <include
+            layout="@layout/row_andromeda"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:visibility="visible" />-->
+    </LinearLayout>
+
+    <ScrollView
+        style="@style/Base.TextAppearance.AppCompat"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:clipToPadding="true"
+        android:fillViewport="true"
+        android:scrollbarStyle="outsideInset"
+        android:visibility="visible">
+
+        <!-- <android.support.v7.widget.RecyclerView-->
+        <!--  android:id="@+id/chatRecyclerView"-->
+        <!-- android:layout_width="match_parent"-->
+        <!--android:layout_height="0dp"-->
+        <!-- android:layout_weight="1"-->
+        <!-- android:scrollbars="vertical"-->
+        <!--android:visibility="visible">-->
+        <!--</android.support.v7.widget.RecyclerView>-->
+        <TextView
+            android:id="@+id/chatTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:color/background_dark"
+            android:fadeScrollbars="true"
+            android:focusable="?android:attr/windowOverscan"
+            android:focusableInTouchMode="true"
+            android:inputType="none"
+            android:keepScreenOn="true"
+            android:saveEnabled="true"
+            android:scrollbars="vertical"
+            android:textColor="@color/colorPrimaryDark"
+            android:visibility="visible" />
+    </ScrollView>
+    <ScrollView
+        style="@android:style/Widget.Holo.Light.ScrollView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clipToPadding="false"
+        android:fillViewport="false"
+        android:visibility="visible">
+
+
+      <!--  <FrameLayout
+            android:id="@+id/FragTitleSend"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="visible">
+
+        </FrameLayout>-->
+
+        <!--<LinearLayout
+            android:id="@+id/cxz"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="end"
+            android:orientation="horizontal"
+            android:visibility="visible">
+
+            <EditText
+                android:id="@+id/E_Send"
+                style="@android:style/Widget.AutoCompleteTextView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:ems="10"
+                android:hint="@string/space"
+                android:inputType="text"
+                android:selectAllOnFocus="false"
+                android:singleLine="false"
+                android:textAlignment="viewStart"
+                android:textColor="@color/colorAccent"
+                android:textSize="24sp"
+                android:textStyle="bold|italic"
+                android:visibility="visible"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.0" />
+
+            <android.support.design.widget.FloatingActionButton
+                android:id="@+id/floatingActionButton"
+                android:layout_width="70dp"
+                android:layout_height="70dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:onClick="sendMessager"
+                android:src="@android:drawable/ic_menu_send"
+                android:visibility="visible"
+                app:backgroundTint="@android:color/holo_green_light"
+                app:elevation="9dp"
+                app:rippleColor="@android:color/holo_orange_dark"
+                tools:ignore="OnClick" />
+
+
+        </LinearLayout>-->
+        <include
+            layout="@layout/row_andromeda"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </ScrollView>
+
+
+</LinearLayout>
