@@ -13,9 +13,9 @@ public class DBManager {
     public     String  SnameIndex, SipadrIndex, SportIndex;
     public      int     SidIndex;
 
-    public static  DBManager getInstance(Context con){
+    public static  DBManager getInstance(Context context){
         if(instance == null){
-            instance = new DBManager(con);}
+            instance = new DBManager(context);}
         return  instance;
     }
 
@@ -48,9 +48,9 @@ public class DBManager {
             do{
                 adapter_listview item = new adapter_listview();
                 item.setID( cursor.getInt( 0 ) );
-                item.setTextname( cursor.getString( 1 ) );
-                item.setTextipadr( cursor.getString( 2 ) );
-                item.setTextport( cursor.getString( 3 ) );
+                item.setName( cursor.getString( 1 ) );
+                item.setIp_adr( cursor.getString( 2 ) );
+                item.setPort( cursor.getString( 3 ) );
                 list.add( item );
             }while (cursor.moveToNext());}
         closeBd();
@@ -83,9 +83,9 @@ public class DBManager {
     public  int addContact(adapter_listview entity){
         openBd();
         ContentValues values = new ContentValues( 3 );
-        values.put( DBHelper.NAME, entity.getTextname() );
-        values.put( DBHelper.IPADR, entity.getTextipadr() );
-        values.put( DBHelper.PORT, entity.getTextport() );
+        values.put( DBHelper.NAME, entity.getName() );
+        values.put( DBHelper.IPADR, entity.getIp_adr() );
+        values.put( DBHelper.PORT, entity.getPort() );
 
         int res = (int)db.insertOrThrow( DBHelper.TABLE_NAME, null, values );
         closeBd();
@@ -96,9 +96,9 @@ public class DBManager {
     public  int updateContact(adapter_listview entity){
         openBd();
         ContentValues values = new ContentValues( 3 );
-        values.put( DBHelper.NAME, entity.getTextname() );
-        values.put( DBHelper.IPADR, entity.getTextipadr() );
-        values.put( DBHelper.PORT, entity.getTextport() );
+        values.put( DBHelper.NAME, entity.getName() );
+        values.put( DBHelper.IPADR, entity.getIp_adr() );
+        values.put( DBHelper.PORT, entity.getPort() );
 
         String where = String.format( "%s=%d",DBHelper._ID,entity.getID() );
         int res = db.update( DBHelper.TABLE_NAME,values,where,null );

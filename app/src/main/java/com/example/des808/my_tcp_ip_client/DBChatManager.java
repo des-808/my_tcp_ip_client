@@ -81,28 +81,28 @@ public class DBChatManager {
     public  int addChatString(adapter_listview entity){
         openBd();
         ContentValues values = new ContentValues( 3 );
-       /* values.put( DBChat.NAME, entity.getTextname() );
-        values.put( DBChat.IPADR, entity.getTextipadr() );
-        values.put( DBChat.PORT, entity.getTextport() );*/
+//        values.put( DBChat.NAME, entity.getTextname() );
+//        values.put( DBChat.IPADR, entity.getTextipadr() );
+//        values.put( DBChat.PORT, entity.getTextport() );
 
         int res = (int)dbchat.insertOrThrow( DBChat.TABLE_NAME, null, values );
         closeBd();
         return res;
     }
 
- /*   //обновление существующего контакта
+    //обновление существующего контакта
     public  int updateChat(adapter_listview entity){
         openBd();
         ContentValues values = new ContentValues( 3 );
-        *//*values.put( DBChat.NAME, entity.getTextname() );
-        values.put( DBChat.IPADR, entity.getTextipadr() );
-        values.put( DBChat.PORT, entity.getTextport() );*//*
+//        values.put( DBChat.NAME, entity.getTextname() );
+//        values.put( DBChat.IPADR, entity.getTextipadr() );
+//        values.put( DBChat.PORT, entity.getTextport() );
 
         String where = String.format( "%s=%d",DBChat._ID,entity.getID() );
         int res = dbchat.update( DBChat.TABLE_NAME,values,where,null );
         closeBd();
         return res;
-    }*/
+    }
 
 
     //удаление контакта

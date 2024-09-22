@@ -60,22 +60,8 @@ public class fragment_TCP_IP extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,Bundle savedInstanceState) {
         v = inflater.inflate( R.layout.fragment_tcp_ip, container, false );
-        /*sw = (Switch) v.findViewById(R.id.switch1);
-        sw.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked) {
-                    mClickCallbackSwitch.onClickSelectedSwitch( true );
-                } else {
-                    mClickCallbackSwitch.onClickSelectedSwitch( false );
-                }
-            }
-        });*/
-
         return v;}
 
-   /* public interface OnFragmentItemClickListenerSwitch {
-        public void onClickSelectedSwitch(boolean x);
-    }*/
 
     @Override
     public void onStart() {

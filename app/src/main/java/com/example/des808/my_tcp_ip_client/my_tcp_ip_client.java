@@ -1,5 +1,8 @@
 package com.example.des808.my_tcp_ip_client;
 
+import static android.app.ProgressDialog.show;
+import static java.lang.Integer.parseInt;
+
 import android.app.ActionBar;
 import android.app.AlertDialog;
 import android.app.FragmentManager;
@@ -8,7 +11,6 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
-import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -35,8 +37,6 @@ import org.greenrobot.eventbus.Subscribe;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-
-import static java.lang.Integer.parseInt;
 
 //import static com.example.des808.my_tcp_ip_client.TCPCommunicator.removeAllListeners;
 /* // greenrobot eventbus урок на ютубе
@@ -99,8 +99,8 @@ public class my_tcp_ip_client extends AppCompatActivity
         setContentView( R.layout.activity_my_tcp_ip_client );
         actionBar = this.getActionBar();
 
-        dbHelper = new DBHelper( this );// создаем объект для создания и управления версиями БД
-        dbChat   = new DBChat( this );// создаем объект для создания и управления версиями БД
+        //dbHelper = new DBHelper( this );// создаем объект для создания и управления версиями БД
+        //dbChat   = new DBChat( this );// создаем объект для создания и управления версиями БД
         EventBus.getDefault().register( this );
         frag1 = new fragment_titles();
         frag2 = new fragment_TCP_IP();
@@ -115,6 +115,8 @@ public class my_tcp_ip_client extends AppCompatActivity
 
         //Log.d(LOG_TAG, "onCcreate");
     }
+
+
 
 
     @Override
@@ -132,8 +134,6 @@ public class my_tcp_ip_client extends AppCompatActivity
     @Override
     protected void onStart() {
         super.onStart();
-        SQLiteDatabase db = new DBHelper( getApplicationContext() ).getWritableDatabase();
-        SQLiteDatabase dbchat = new DBChat( getApplicationContext() ).getWritableDatabase();
     }
 
     @Override
@@ -207,9 +207,6 @@ public class my_tcp_ip_client extends AppCompatActivity
                 razd =       (EditText) findViewById( R.id.editRazd );
                 schs =       (EditText) findViewById( R.id.editSchs );
                 btnSend_tx = (Button)   findViewById( R.id.buttonSend_tx );
-                if (vedromeda_bool){
-
-                }
                 //sw = (Switch) findViewById(R.id.switch1);
                 ConnectToServer();
                // actionBar.hide();
@@ -243,7 +240,7 @@ public class my_tcp_ip_client extends AppCompatActivity
     //###################################################################################################
     @Subscribe
     public void EventBusRessiverString(CustomMessageEvent event) {
-        String nhf = event.getCustoMessage();
+        String nhf = event.getCustom_Message();
         toast = Toast.makeText( this, nhf, Toast.LENGTH_LONG );
         toast.setGravity( Gravity.CENTER, 0, -700 );
         toast.show();
@@ -263,18 +260,18 @@ public class my_tcp_ip_client extends AppCompatActivity
     }
 
     //###################################################################################################*/
-    public void tost(String tost) {
-        toast = Toast.makeText( this, tost, Toast.LENGTH_LONG );
+    public void tost(String msg) {
+        toast = Toast.makeText( this, msg, Toast.LENGTH_LONG );
         toast.show();
     }
 
-    public void tostInt(int tost) {
-        toast = Toast.makeText( this, tost, Toast.LENGTH_LONG );
+    public void tostInt(int msg) {
+        toast = Toast.makeText( this, msg, Toast.LENGTH_LONG );
         toast.show();
     }
 
-    public void tostChar(char tost) {
-        toast = Toast.makeText( this, tost, Toast.LENGTH_LONG );
+    public void tostChar(char msg) {
+        toast = Toast.makeText( this, msg, Toast.LENGTH_LONG );
         toast.show();
     }
 
@@ -284,7 +281,6 @@ public class my_tcp_ip_client extends AppCompatActivity
 
     @Override
     public void onClickSelected(int position) {
-
         items = C_Adapter.getItem( position );
         //DBManager.getInstance( getApplicationContext() ).getAllContacts(items);
         HashMap<String, String> values = (DBManager.getInstance( getApplicationContext() ).readContact( position ));
@@ -314,16 +310,7 @@ public class my_tcp_ip_client extends AppCompatActivity
         }
         try
         {
-             /*if(vedromeda_bool){
-                String x = "5432 18";
-                int ia = 20;
-                char i = (char)ia;
-                e_send = x + e_send + i;
-                TCPCommunicator.writeToSocket(e_send,UIHandler,this);
-             }else
-                 {*/
                  TCPCommunicator.writeToSocket( e_send, UIHandler, this );
-                //}
         }
         catch(Exception e)
         {
@@ -332,41 +319,35 @@ public class my_tcp_ip_client extends AppCompatActivity
         //dialog.show();
         }
 
+
     public void sendTx(View v)  {
         object =     (EditText) findViewById( R.id.editObjekt );
         clas =       (EditText) findViewById( R.id.editClass );
         razd =       (EditText) findViewById( R.id.editRazd );
         schs =       (EditText) findViewById( R.id.editSchs );
-        //btnSend_tx = (Button)   findViewById( R.id.buttonSend_tx );
         String e_object = object.getText().toString();
         String e_clas   = clas.getText().toString();
         String e_razd   = razd.getText().toString();
         String e_schs   = schs.getText().toString();
         String E_text   = e_object + e_clas + e_razd + e_schs;
-        //TextView textViewFromServer =(TextView) findViewById(R.id.E__text);
-        //textViewFromServer.setText( "" );
-
-        //EditText textFragmentEsend = (EditText) findViewById( R.id.E_Send );
-        //textFragmentEsend.setText(E_text);
-
 
         String x = "5032 18";
-        //int ia = 20;
-       // char i = (char)ia;
         char i = (char)20;
-        E_text = x + E_text + i;// + "\n";
-        TCPCommunicator.writeToSocket(E_text,UIHandler,this);
-        chatTextString(E_text);
+        E_text = x + E_text + i;//
+        if (TCPCommunicator.writeToSocket(E_text,UIHandler,this)== TCPCommunicator.TCPWriterErrors.OK){
+            chatTextString(E_text);
+        }else
+        {
+            tost("ошибка передачи сообщения");
+        }
     }
 
     public void chatTextString(String i){
         chatText = (TextView) findViewById( R.id.chatTextView );
-        //chatText.setMovementMethod(new ScrollingMovementMethod());
         String text = chatText.getText( ).toString();
         TCPCommunicator.vedromedaBool(vedromeda_bool);
         text = text + "\n" + i;
         chatText.setText( text );
-
     }
 
     @Override
@@ -381,20 +362,19 @@ public class my_tcp_ip_client extends AppCompatActivity
             case MENU_DELETE:
                 openDeleteDialog( items );
                 break;
+                //case MENU_CANCEL:break;
             default:
                 break;
         }
         return super.onContextItemSelected( item );//false;//
-
     }
 
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu( menu, v, menuInfo );
-
         menu.add( 0, MENU_RENAME, 0, "Редактировать" );
         menu.add( 0, MENU_DELETE, 0, "Удалить" );
-        // menu.add( 0, MENU_CANCEL, 0, "Отмена" );
+        //menu.add( 0, MENU_CANCEL, 0, "Отмена" );
     }
 
     private void refreshList() {
@@ -424,8 +404,8 @@ public class my_tcp_ip_client extends AppCompatActivity
                         ipadr_.getText().toString(),
                         port_.getText().toString() );
                 DBManager.getInstance( getApplicationContext() ).addContact( item );
-                refreshList();
                 //list.add( item );
+                refreshList();
             }
         } ).setNegativeButton( "Отмена", new DialogInterface.OnClickListener() {
             @Override
@@ -433,7 +413,6 @@ public class my_tcp_ip_client extends AppCompatActivity
                 dialog.cancel();
             }
         } );
-
         builder.setCancelable( false );
         builder.create();
         builder.show();
@@ -447,9 +426,9 @@ public class my_tcp_ip_client extends AppCompatActivity
         final EditText ipadr_ = (EditText) root.findViewById( R.id.detailsIpAdr );
         final EditText port_ = (EditText) root.findViewById( R.id.detailsPort );
 
-        name_.setText( item.getTextname() );
-        ipadr_.setText( item.getTextipadr() );
-        port_.setText( item.getTextport() );
+        name_.setText( item.getName() );
+        ipadr_.setText( item.getIp_adr() );
+        port_.setText( item.getPort() );
 
         AlertDialog.Builder builder = new AlertDialog.Builder( this );
         builder.setView( root );
@@ -458,9 +437,9 @@ public class my_tcp_ip_client extends AppCompatActivity
         builder.setPositiveButton( "Сохранить", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int id) {
-                item.setTextname( name_.getText().toString() );
-                item.setTextipadr( ipadr_.getText().toString() );
-                item.setTextport( port_.getText().toString() );
+                item.setName( name_.getText().toString() );
+                item.setIp_adr( ipadr_.getText().toString() );
+                item.setPort( port_.getText().toString() );
 
                 DBManager.getInstance( getApplicationContext() ).updateContact( item );
                 refreshList();
@@ -484,7 +463,7 @@ public class my_tcp_ip_client extends AppCompatActivity
 
         AlertDialog.Builder builder = new AlertDialog.Builder( this );
         //builder.setView( root );
-        builder.setMessage( String.format( "Удалить контакт %s?", item.getTextname() ) );
+        builder.setMessage( String.format( "Удалить контакт %s?", item.getName() ) );
 
         builder.setPositiveButton( "Удалить", new DialogInterface.OnClickListener() {
             @Override
@@ -514,11 +493,8 @@ public class my_tcp_ip_client extends AppCompatActivity
         //Log.d(LOG_TAG, "onSaveInstanceState");
     }
 
-
-
-
     private void setupDialog() {
-        dialog = new ProgressDialog( this, ProgressDialog.STYLE_HORIZONTAL );//STYLE_SPINNER
+        dialog = new ProgressDialog( this, ProgressDialog.STYLE_SPINNER );//STYLE_SPINNER
         dialog.setTitle( "Connecting" );
         dialog.setMessage( "Please wait..." );
         dialog.setIndeterminate( true );
@@ -546,9 +522,9 @@ public class my_tcp_ip_client extends AppCompatActivity
     public void onTCPMessageRecieved(String message) {
         // TODO Auto-generated method stub
         final String theMessage = message;
-       // mMessage = message;
+        mMessage = message;
+        chatText = (TextView) findViewById( R.id.chatTextView );
         runOnUiThread(new Runnable() {
-
                    @Override
                    public void run() {
                        //TextView editTextFromServer =(TextView) findViewById(R.id.E__text);
@@ -557,8 +533,12 @@ public class my_tcp_ip_client extends AppCompatActivity
                           //Log.d("TEST",theMessage);
                           //mMessage = String.valueOf( mMessage );
                           //editTextFromServer.setText(mMessage);
-         //chatTextString(theMessage);
-
+                        //chatTextString(theMessage);
+                       //String text = chatText.getText( ).toString();
+                       //tost(theMessage);
+                       String text = chatText.getText( ).toString();
+                       text = text+theMessage+"\n";
+                       chatText.setText( text );
                    }
                });
     }
@@ -570,7 +550,6 @@ public class my_tcp_ip_client extends AppCompatActivity
                           @Override
                           public void run() {
                               //chatTextString(theMessageChar);
-
                               String text = chatText.getText( ).toString();
                               TCPCommunicator.vedromedaBool(vedromeda_bool);
                               text = text + messageChar;
@@ -630,17 +609,18 @@ public class my_tcp_ip_client extends AppCompatActivity
     }
 
 
-  /*  @Override
+    //@Override
     public void onClickSelectedSwitch(boolean x) {
-        if (x) {vedromeda_bool = true ;
-            TCPCommunicator.vedromedaBool(vedromeda_bool);
-            //tost("true")
-             }
-        else {vedromeda_bool = false;
-            TCPCommunicator.vedromedaBool(vedromeda_bool);
-            //tost("false")
-             }
-    }*/
+
+//        if (x) {vedromeda_bool = true ;
+//            TCPCommunicator.vedromedaBool(vedromeda_bool);
+//            //tost("true")
+//             }
+//        else {vedromeda_bool = false;
+//            TCPCommunicator.vedromedaBool(vedromeda_bool);
+//            //tost("false")
+//             }
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu){
@@ -649,8 +629,8 @@ public class my_tcp_ip_client extends AppCompatActivity
     }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-     //int id = item.getItemId();
-     //if (id == R.id.action_set_andromeda) {
+     /*int id = item.getItemId();
+     if (id == R.id.action_set_andromeda) {*/
         switch (item.getItemId()){
             case R.id.action_set_andromeda:
          if (!vedromeda_bool) {vedromeda_bool = true ;

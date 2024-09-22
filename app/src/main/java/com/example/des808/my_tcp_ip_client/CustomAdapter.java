@@ -7,8 +7,6 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
-import org.greenrobot.eventbus.EventBus;
-
 import java.util.ArrayList;
 
 public class CustomAdapter extends BaseAdapter {
@@ -46,18 +44,11 @@ public class CustomAdapter extends BaseAdapter {
         TextView textipadr = (TextView) view.findViewById( R.id.row_ipadress );
         TextView textport = (TextView) view.findViewById( R.id.row_port );
 
-        textname.setText( item.getTextname() );
-        textipadr.setText( item.getTextipadr() );
-        textport.setText( item.getTextport() );
+        textname.setText( item.getName() );
+        textipadr.setText( item.getIp_adr() );
+        textport.setText( item.getPort() );
         return view;
     }
-
-   /* public void EventBusTransmitterInt(int idf){
-        message_event event = new message_event();
-        event.setMessage( idf );
-        EventBus.getDefault().post( event );
-
-    }*/
 }
 
 

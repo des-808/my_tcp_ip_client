@@ -35,6 +35,7 @@ public class fragment_titles extends Fragment
     private long arg3;
     public boolean mMuteSelection;
     private static final String LOG_TAG = "LOG_TAG" ;
+    private Bundle savedInstanceState;
 
 
     public fragment_titles() {
@@ -53,10 +54,12 @@ public class fragment_titles extends Fragment
     @Override
     public void onStart() {
         super.onStart();
-        EventBusTransmitterInt(1);}//шлем в активити привет. что фрагмент запустился. пускай шлёт пожелания
+        EventBusTransmitterInt(1);//шлем в активити привет. что фрагмент запустился. пускай шлёт пожелания
+        }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        this.savedInstanceState = savedInstanceState;
         super.onCreate( savedInstanceState );
         if (getArguments() != null) {}
     }

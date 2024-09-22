@@ -28,9 +28,6 @@ public class TCPCommunicator {
 	private static BufferedReader in;
 	public static boolean vedromeda_bool;
 	private static InputStream inSocketStream;
-	//private static OutputStream outSocketStream;
-//	private static DataInputStream in;
-	//private static DataOutputStream out;
 	private static Socket s;
 	private static Handler UIHandler;
 	private static Context appContext;
@@ -56,6 +53,7 @@ public class TCPCommunicator {
 	}
 	public static  TCPWriterErrors writeToSocket(final String i, Handler handle,Context context)
 	{
+
 		UIHandler=handle;
 		appContext=context;
 		Runnable runnable = new Runnable() {
@@ -66,12 +64,12 @@ public class TCPCommunicator {
 			        String outMsg = i.toString() ;
 			        out.write(  outMsg  );
 			        out.flush();
+					//Toast.makeText( appContext, i, Toast.LENGTH_LONG ).show();
 			        Log.d("TcpClient", "sent: " + outMsg);
 				}
 				catch(Exception e)
 				{
 					UIHandler.post(new Runnable() {
-
 						@Override
 						public void run() {
 							Toast.makeText(appContext ,"a problem has occured, the app might not be able to reach the server", Toast.LENGTH_SHORT).show();
