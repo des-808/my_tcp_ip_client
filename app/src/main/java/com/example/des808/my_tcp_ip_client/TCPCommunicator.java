@@ -6,8 +6,6 @@ import android.os.Handler;
 import android.util.Log;
 import android.widget.Toast;
 
-import org.greenrobot.eventbus.EventBus;
-
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -184,11 +182,11 @@ public class TCPCommunicator {
 
 
 
-	public static void EventBusTransmitterInt(int idf){
+	/*public static void EventBusTransmitterInt(int idf){
 		message_event event = new message_event();
 		event.setMessage( idf );
 		EventBus.getDefault().post( event );
 
-	}
+	}*/
 
 }

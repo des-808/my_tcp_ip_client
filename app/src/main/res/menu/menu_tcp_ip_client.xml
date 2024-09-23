@@ -3,24 +3,34 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.example.des808.tcp_ip_client.tcp_ip_client">
 
-
     <item
-        android:id="@+id/action_set_andromeda"
+        android:id="@+id/action_Connect_Disconnect_TCP_IP"
         android:checkable="true"
-        android:title="@string/andromeda"
-        android:visible="true"
-        app:actionLayout="@layout/action_layout_styled_checkbox"
-        app:showAsAction="never" />
-    <!--app:actionLayout="@layout/switch_item"-->
+        android:checked="false"
+        android:icon="@android:drawable/checkbox_off_background"
 
-
-    <!-- <item
+        android:title="Open"
+        app:showAsAction="ifRoom" />
+    <item
         android:id="@+id/action_settings"
-        android:enabled="true"
-        android:orderInCategory="100"
-        android:title="@string/settings"
-        android:visible="true"
-        app:showAsAction="never" />-->
+        android:checkable="false"
+        android:checked="false"
+        android:icon="@android:drawable/ic_menu_manage"
+        android:title="@string/Settings"
+        app:showAsAction="always" />
 
+    <!--android:icon="@drawable/icon_setting"-->
+        <item android:id="@+id/action_set_andromeda"
+            android:checkable="true"
+            android:title="@string/andromeda"
+            android:checked="false" />
+        <!--<item android:id="@+id/action_Connect_Disconnect_TCP_IP"
+            android:checkable="true"
+            android:title="@string/disconnect_tcp_ip"
+            app:actionLayout="@layout/switch_item"
+            android:checked="false"/>-->
+            <!--app:showAsAction="always"-->
+
+    <!--app:actionLayout="@layout/switch_item"-->
 
 </menu>

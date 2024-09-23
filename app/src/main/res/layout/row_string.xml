@@ -44,7 +44,7 @@
             android:clickable="true"
             android:focusable="true"
             android:onClick="sendMessager"
-            android:src="@android:drawable/ic_menu_send"
+            android:src="@android:drawable/ic_popup_disk_full"
             android:visibility="visible"
             app:backgroundTint="@android:color/holo_green_light"
             app:elevation="9dp"

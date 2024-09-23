@@ -1,6 +1,5 @@
 package com.example.des808.my_tcp_ip_client;
 
-import static android.app.ProgressDialog.show;
 import static java.lang.Integer.parseInt;
 
 import android.app.ActionBar;
@@ -42,11 +41,15 @@ import java.util.HashMap;
 /* // greenrobot eventbus урок на ютубе
     //https://www.youtube.com/watch?v=WnzSkRinnuc*/
 
+
+
 public class my_tcp_ip_client extends AppCompatActivity
     implements  fragment_titles.OnFragmentInteractionListener,
                 fragment_titles.OnFragmentItemClickListener,
+                onListViewFragmentTitle,
+                onFragment_TCP_IP_Init,
                 TCPListener,
-            //fragment_TCP_IP.OnFragmentItemClickListenerSwitch,
+                //fragment_TCP_IP.OnFragmentItemClickListenerSwitch,
                 fragment_TCP_IP.OnFragmentInteractionListener{
 
 
@@ -57,7 +60,7 @@ public class my_tcp_ip_client extends AppCompatActivity
     private ListView listView;
     final int MENU_RENAME = 1;
     final int MENU_DELETE = 2;
-    //final int MENU_CANCEL = 3;
+    final int MENU_CANCEL = 3;
     final int ack = 6;
     final int nack = 21;
     public boolean vedromeda_bool;
@@ -83,41 +86,80 @@ public class my_tcp_ip_client extends AppCompatActivity
     public static String currentUserName;
     private Handler UIHandler = new Handler();
     public MenuItem menu_andromeda;
+    public MenuItem menu_switch_btn;
 
     public EditText object,clas,razd,schs;
     public Button btnSend_tx;
-    public Switch sw;
+    public Switch switch_btn;
+    public FrameLayout frame_switch_btn;
+
 
     fragment_exit dialogFragment;
-    fragment_titles frag1;
-    fragment_TCP_IP frag2;
+    fragment_titles fragTitles;
+    fragment_TCP_IP fragTCP_IP;
     FragmentTransaction fTrans;
 
+
+    @Override
+    public void on_ListViewFragmentTitleInit() {
+        //сработает когда запустится фрагмент fragment_title
+        Adapter();//247
+        //FragmentTransaction FragTrans = getFragmentManager().beginTransaction();
+        final ListView newlist = (ListView) findViewById( R.id.list );//fragment_title
+        registerForContextMenu( newlist ); //если  раньше запускать будет ошибка. фрагменты не мгновенно запускаются
+    }
+
+    @Override
+    public void on_FragmentTCP_IP_Init() {
+        //сработает когда запустится фрагмент fragment_tcp_ip
+        //initChatRecyclerView();
+        String xparam = param2 + ":" + param3;
+        TextView x = (TextView) findViewById( R.id.connect_text );
+        x.setText( xparam );
+        EditText y = (EditText) findViewById( R.id.E_Send );
+        //y.setText( "" );
+        object =     (EditText) findViewById( R.id.editObjekt );
+        clas =       (EditText) findViewById( R.id.editClass );
+        razd =       (EditText) findViewById( R.id.editRazd );
+        schs =       (EditText) findViewById( R.id.editSchs );
+        btnSend_tx = (Button)   findViewById( R.id.buttonSend_tx );
+        //sw = (Switch) findViewById(R.id.switch1);
+        ConnectToServer();
+        // actionBar.hide();
+    }
+
+    @Override
+    public void on_FragmentTCP_IP_Disconnect(){
+        DisconnectToServer();
+    }
+
+    @Override
+    public void on_FragmentTCP_IP_Switch() {
+        tost("Сработка");
+    }
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate( savedInstanceState );
         setContentView( R.layout.activity_my_tcp_ip_client );
         actionBar = this.getActionBar();
+        //EventBus.getDefault().register( this );
 
-        //dbHelper = new DBHelper( this );// создаем объект для создания и управления версиями БД
-        //dbChat   = new DBChat( this );// создаем объект для создания и управления версиями БД
-        EventBus.getDefault().register( this );
-        frag1 = new fragment_titles();
-        frag2 = new fragment_TCP_IP();
+        fragTitles = new fragment_titles();
+        fragTCP_IP = new fragment_TCP_IP();
         final FrameLayout edit = (FrameLayout) findViewById( R.id.FrLay );
 
-
         fTrans = getFragmentManager().beginTransaction();
-        listView = (ListView) edit.findViewById( R.id.my_listview );//row_listview
-        menu_andromeda =(MenuItem)findViewById( R.id.action_set_andromeda );
-        fTrans.add(R.id.FrLay,frag1);//.add( R.id.FrLay,frag1 );//.add( R.id.FrLay, frag1 );
+        //listView = (ListView) edit.findViewById( R.id.my_listview );//row_listview
+       // menu_andromeda =(MenuItem)findViewById( R.id.action_set_andromeda );
+        //menu_andromeda = (MenuItem)findViewById( R.id.menuGroup );
+
+
+        fTrans.add(R.id.FrLay,fragTitles );//.add( R.id.FrLay,frag1 );//.add( R.id.FrLay, frag1 );
+        //fTrans.add(R.id.FrLay,fragTitles);//.add( R.id.FrLay,frag1 );//.add( R.id.FrLay, frag1 );
         fTrans.commit();
 
         //Log.d(LOG_TAG, "onCcreate");
     }
-
-
-
 
     @Override
     protected void onResume() {
@@ -125,11 +167,11 @@ public class my_tcp_ip_client extends AppCompatActivity
         //Log.d(LOG_TAG, "onResume");
         }
 
-  /*  private void initChatRecyclerView() {
-        fTrans = getFragmentManager().beginTransaction();
-        chatRecyclerView = findViewById(R.id.chatRecyclerView);
-        chatRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-    }*/
+//    private void initChatRecyclerView() {
+//        fTrans = getFragmentManager().beginTransaction();
+//        chatRecyclerView = findViewById(R.id.chatRecyclerView);
+//        chatRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+//    }
 
     @Override
     protected void onStart() {
@@ -138,6 +180,7 @@ public class my_tcp_ip_client extends AppCompatActivity
 
     @Override
     public void onFragmentInteraction(Uri uri) {
+       // tost("onFragmentInteraction");
     }
 
     @Override
@@ -150,12 +193,9 @@ public class my_tcp_ip_client extends AppCompatActivity
         }
     }
 
-    public void doPositiveClick() {
-        this.finish();
-    }
+    public void doPositiveClick() {this.finish();}
 
-    public void doNegativeClick() {
-    }
+    public void doNegativeClick() {}
 
     @Override
     protected void onPause() {
@@ -180,42 +220,25 @@ public class my_tcp_ip_client extends AppCompatActivity
     }
 
     public void onClickAdd(View v) {
-        //создаём аллерт дилог новой строки
+        //создаём аллерт дилог нового подключения
         openAddDialog();
     }
 
     @Subscribe
     public void EventBusRessiverInt(message_event event) {
-
         int nrj = event.getMessage();
         switch (nrj) {
             case 1://сработает когда запустится фрагмент fragment_title
-                Adapter();
-                fTrans = getFragmentManager().beginTransaction();
-                final ListView newlist = (ListView) findViewById( R.id.list );//fragment_title
-                registerForContextMenu( newlist ); //если  раньше запускать будет ошибка. фрагменты не мгновенно запускаются
+                //on_ListViewFragmentTitleInit() ;
                 break;
             case 2://сработает когда запустится фрагмент fragment_tcp_ip
-                //initChatRecyclerView();
-                String xparam = param2 + ":" + param3;
-                TextView x = (TextView) findViewById( R.id.connect_text );
-                x.setText( xparam );
-                EditText y = (EditText) findViewById( R.id.E_Send );
-                //y.setText( "" );
-                object =     (EditText) findViewById( R.id.editObjekt );
-                clas =       (EditText) findViewById( R.id.editClass );
-                razd =       (EditText) findViewById( R.id.editRazd );
-                schs =       (EditText) findViewById( R.id.editSchs );
-                btnSend_tx = (Button)   findViewById( R.id.buttonSend_tx );
-                //sw = (Switch) findViewById(R.id.switch1);
-                ConnectToServer();
-               // actionBar.hide();
+                //on_FragmentTCP_IP_Init();
                 break;
             case 3:
                 //npc = " 3 ";
                 //actionBar.show();
-                DisconnectToServer();
-                tost( "Disconnected to Server" );
+               // DisconnectToServer();
+                //tost( "Disconnected to Server" );
                 break;
             case 4:
                 npc = " true ";
@@ -230,13 +253,6 @@ public class my_tcp_ip_client extends AppCompatActivity
         }
     }
 
-
-
-
-
-
-
-
     //###################################################################################################
     @Subscribe
     public void EventBusRessiverString(CustomMessageEvent event) {
@@ -250,7 +266,7 @@ public class my_tcp_ip_client extends AppCompatActivity
 
     //###################################################################################################
     public void Adapter() {
-        fTrans = getFragmentManager().beginTransaction();
+        //fTrans = getFragmentManager().beginTransaction();
         //list = new ArrayList<adapter_listview>();
         //initContacts();
         list = DBManager.getInstance( this ).getAllContacts();
@@ -288,11 +304,20 @@ public class my_tcp_ip_client extends AppCompatActivity
         param2 = values.get( "param2" );
         param3 = values.get( "param3" );
 
-        //Log.d(LOG_TAG, String.valueOf( xparam ) );
+        /*//Log.d(LOG_TAG, String.valueOf( xparam ) );
         fTrans = getFragmentManager().beginTransaction();
         //adapter_listview item_id = C_Adapter.getItem( position );
-        fTrans.remove( frag1 );
-        fTrans.add( R.id.FrLay, frag2 );//fTrans.replace( R.id.FrLay, frag2 );
+        fTrans.remove( fragTitles );
+        fTrans.add( R.id.FrLay, fragTCP_IP );//fTrans.replace( R.id.FrLay, fragTCP_IP );
+        fTrans.addToBackStack( null );
+        fTrans.commit();*/
+        onStartFragmentTCP_IP();
+    }
+    public void onStartFragmentTCP_IP() {
+        fTrans = getFragmentManager().beginTransaction();
+        //adapter_listview item_id = C_Adapter.getItem( position );
+        fTrans.remove( fragTitles );
+        fTrans.add( R.id.FrLay, fragTCP_IP );//fTrans.replace( R.id.FrLay, fragTCP_IP );
         fTrans.addToBackStack( null );
         fTrans.commit();
     }
@@ -368,6 +393,8 @@ public class my_tcp_ip_client extends AppCompatActivity
         }
         return super.onContextItemSelected( item );//false;//
     }
+
+
 
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
@@ -502,20 +529,28 @@ public class my_tcp_ip_client extends AppCompatActivity
     }
 
     private void ConnectToServer() {
-        if(!connectToServer) {
-            setupDialog();
-            tcpClient = TCPCommunicator.getInstance();
-            TCPCommunicator.addListener( this );
-            SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences( this );
-            tcpClient.init( settings.getString( EnumsAndStatics.SERVER_IP_PREF, param2 ),
-                    parseInt( settings.getString( EnumsAndStatics.SERVER_PORT_PREF, param3 ) ) );
-        }
+        //if(TCPCommunicator.getInstance()== null){
+
+
+            if(!connectToServer) {
+                setupDialog();
+                tcpClient = TCPCommunicator.getInstance();
+                TCPCommunicator.addListener( this );
+                SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences( this );
+                //DataStore settings = PreferenceManager.getDefaultSharedPreferences( this );
+                tcpClient.init( settings.getString( EnumsAndStatics.SERVER_IP_PREF, param2 ),
+                        parseInt( settings.getString( EnumsAndStatics.SERVER_PORT_PREF, param3 ) ) );
+            }
+        //}
     }
 
     private void DisconnectToServer(){
-        TCPCommunicator.closeStreams();
-        TCPCommunicator.removeAllListeners();
-        connectToServer = false;
+        if(TCPCommunicator.getInstance()!= null){
+            TCPCommunicator.closeStreams();
+            TCPCommunicator.removeAllListeners();
+            connectToServer = false;
+            tost( "Disconnected to Server" );
+        }
     }
 
     @Override
@@ -559,8 +594,6 @@ public class my_tcp_ip_client extends AppCompatActivity
         });
     }
 
-
-
  /*   public void onTCPMessageRecievedInt(final Integer messageInt) {
         final int theMessageInt = messageInt;
         runOnUiThread(new Runnable() {
@@ -597,9 +630,9 @@ public class my_tcp_ip_client extends AppCompatActivity
                     dialog.hide();
                     Toast.makeText(getApplicationContext(), "Connected to server", Toast.LENGTH_SHORT).show();
                     connectToServer = true;
+                    menu_switch_btn.setIcon(android.R.drawable.checkbox_on_background);
                 }
             });
-
         }
     }
 
@@ -608,47 +641,59 @@ public class my_tcp_ip_client extends AppCompatActivity
         handler.postDelayed(new Runnable() {public void run() { }}, i);
     }
 
-
-    //@Override
-    public void onClickSelectedSwitch(boolean x) {
-
-//        if (x) {vedromeda_bool = true ;
-//            TCPCommunicator.vedromedaBool(vedromeda_bool);
-//            //tost("true")
-//             }
-//        else {vedromeda_bool = false;
-//            TCPCommunicator.vedromedaBool(vedromeda_bool);
-//            //tost("false")
-//             }
-    }
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu){
      getMenuInflater().inflate( R.menu.menu_tcp_ip_client, menu );
+        menu_switch_btn = menu.findItem(R.id.action_Connect_Disconnect_TCP_IP);
      return true;
     }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-     /*int id = item.getItemId();
-     if (id == R.id.action_set_andromeda) {*/
         switch (item.getItemId()){
-            case R.id.action_set_andromeda:
-         if (!vedromeda_bool) {vedromeda_bool = true ;
-             TCPCommunicator.vedromedaBool(vedromeda_bool);
-             //menu_andromeda.setChecked( true );
-             tost("true");
-         }
-         else {vedromeda_bool = false;
-             TCPCommunicator.vedromedaBool(vedromeda_bool);
-             //menu_andromeda.setCheckable( false );
-             tost("false");}
+            case R.id.action_settings:
+
+                item.setChecked(!item.isChecked());
                 return true;
-            default:
-                return super.onOptionsItemSelected(item);
-         }
+                case R.id.action_set_andromeda:
+                    if (!vedromeda_bool) {
+                        vedromeda_bool = true;
+                        TCPCommunicator.vedromedaBool(vedromeda_bool);
+                        item.setChecked(vedromeda_bool);
+                        //tost("true");
+                        return true;
+                    } else {
+                        vedromeda_bool = false;
+                        TCPCommunicator.vedromedaBool(vedromeda_bool);
+                        item.setChecked(vedromeda_bool);
+                        //tost("false");
+                        return true;
+                    }
+                case R.id.action_Connect_Disconnect_TCP_IP:
+                    //item.setChecked(!item.isChecked());
+                    if (connectToServer == true) {
+                        DisconnectToServer();
+                        //item.setTitle( "Closed" );
+                        item.setIcon(android.R.drawable.checkbox_off_background);
+                    }
+                    else {
+                        //item.setTitle( "Open" );
+                        onStartFragmentTCP_IP();
+                        //item.setIcon(android.R.drawable.checkbox_on_background);
 
-
+                    }
+                    return true;
+            case R.id.xz:
+                item.setChecked(!item.isChecked());
+            }
+            return super.onOptionsItemSelected(item);
         }
+
+//=================================================================================
+
+
+
+
+
 
 
 

@@ -12,18 +12,15 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.Switch;
 
-import org.greenrobot.eventbus.EventBus;
-
 public class fragment_TCP_IP extends Fragment {
-   // private OnFragmentItemClickListenerSwitch mClickCallbackSwitch;
     private OnFragmentInteractionListener mListener;
+    private onFragment_TCP_IP_Init mFragmentTCPIPInit;
     private Button button;
     private View v;
     private static final String LOG_TAG = "LOG_TAG" ;
     public Switch sw;
 
-    public fragment_TCP_IP() {
-    }
+    public fragment_TCP_IP() {}
 
     @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
     // TODO: Rename and change types and number of parameters
@@ -34,21 +31,19 @@ public class fragment_TCP_IP extends Fragment {
         return fragment;
     }
 
-
-
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
+        if (context instanceof onFragment_TCP_IP_Init){
+            mFragmentTCPIPInit = (onFragment_TCP_IP_Init) context;
+        }
         if (context instanceof OnFragmentInteractionListener) {
             mListener = (OnFragmentInteractionListener) context;
         } else {
             throw new RuntimeException( context.toString() + " must implement OnFragmentInteractionListener" );
         }
-        //mClickCallbackSwitch = (OnFragmentItemClickListenerSwitch) context;
         //Log.d(LOG_TAG, "onAttach");
     }
-
-
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -56,17 +51,15 @@ public class fragment_TCP_IP extends Fragment {
         //Log.d(LOG_TAG, "onCreate");
     }
 
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,Bundle savedInstanceState) {
         v = inflater.inflate( R.layout.fragment_tcp_ip, container, false );
         return v;}
 
-
     @Override
     public void onStart() {
         super.onStart();
-        EventBusTransmitterInt(2);
+        mFragmentTCPIPInit.on_FragmentTCP_IP_Init();
         //Log.d(LOG_TAG, "onStart");
     }
 
@@ -82,20 +75,11 @@ public class fragment_TCP_IP extends Fragment {
         super.onDetach();
         mListener = null;
         //Log.d(LOG_TAG, "onDeath");
-        EventBusTransmitterInt(3);
+        mFragmentTCPIPInit.on_FragmentTCP_IP_Disconnect();
     }
-
 
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
     }
-
-    public void EventBusTransmitterInt(int idf){
-        message_event event = new message_event();
-        event.setMessage( idf );
-        EventBus.getDefault().post( event );
-
-    }
-
 }

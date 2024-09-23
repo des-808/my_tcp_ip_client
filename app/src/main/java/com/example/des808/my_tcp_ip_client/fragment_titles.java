@@ -13,15 +13,13 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import org.greenrobot.eventbus.EventBus;
-
 import java.util.ArrayList;
 
 public class fragment_titles extends Fragment
-
 {
     private OnFragmentItemClickListener mClickCallback;
     private OnFragmentInteractionListener mListener;
+    public onListViewFragmentTitle ONListViewFragmentTitle;
     public View v;
     public Toast toast;
     public CharSequence message;
@@ -37,10 +35,10 @@ public class fragment_titles extends Fragment
     private static final String LOG_TAG = "LOG_TAG" ;
     private Bundle savedInstanceState;
 
-
     public fragment_titles() {
 
     }
+    //public interface OnStartFragmentTitle { }
 
     // TODO: Rename and change types and number of parameters
     @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
@@ -54,7 +52,7 @@ public class fragment_titles extends Fragment
     @Override
     public void onStart() {
         super.onStart();
-        EventBusTransmitterInt(1);//шлем в активити привет. что фрагмент запустился. пускай шлёт пожелания
+        ONListViewFragmentTitle.on_ListViewFragmentTitleInit() ; //шлем в активити привет. что фрагмент запустился. пускай шлёт пожелания
         }
 
     @Override
@@ -62,6 +60,7 @@ public class fragment_titles extends Fragment
         this.savedInstanceState = savedInstanceState;
         super.onCreate( savedInstanceState );
         if (getArguments() != null) {}
+
     }
     //######################################################################################################
     @Override
@@ -75,6 +74,8 @@ public class fragment_titles extends Fragment
                 mClickCallback.onClickSelected( position );
             }
         } );
+
+
         return v;
     }
     //######################################################################################################
@@ -82,17 +83,24 @@ public class fragment_titles extends Fragment
         public void onClickSelected(int position);
     }
 
-
     @Override
     public void onAttach(Context context) {
         super.onAttach( context );
+        if (context instanceof onListViewFragmentTitle)
+        {
+            try {
+                ONListViewFragmentTitle = (onListViewFragmentTitle) context;
+            }catch (ClassCastException e)
+            {
+                throw new ClassCastException(context.toString() + " must implement ONListViewFragmentTitle");
+            }
+        }
         try {
             mClickCallback = (OnFragmentItemClickListener) context;
         } catch (ClassCastException e) { throw new ClassCastException(context.toString() + " must implement OnFragmentItemClickListener");}
         if (context instanceof OnFragmentInteractionListener) {
             mListener = (OnFragmentInteractionListener) context;
         } else { throw new RuntimeException( context.toString() + " must implement OnFragmentInteractionListener" );}
-
     }
 
     @Override
@@ -110,11 +118,8 @@ public class fragment_titles extends Fragment
         void onFragmentInteraction(Uri uri);
     }
 
-   public void EventBusTransmitterInt(int idf){
-       message_event event = new message_event();
-       event.setMessage( idf );
-       EventBus.getDefault().post( event );
 
-   }
+
+
 
 }
