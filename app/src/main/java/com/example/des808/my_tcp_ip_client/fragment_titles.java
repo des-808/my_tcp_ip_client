@@ -1,17 +1,21 @@
 package com.example.des808.my_tcp_ip_client;
 
-import android.app.Fragment;
+//import android.app.Fragment;
+
+//import android.app.Fragment;
+
 import android.content.Context;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.RequiresApi;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
+
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 
 import java.util.ArrayList;
 
@@ -36,12 +40,12 @@ public class fragment_titles extends Fragment
     private Bundle savedInstanceState;
 
     public fragment_titles() {
-
+        // Required empty public constructor
     }
     //public interface OnStartFragmentTitle { }
 
     // TODO: Rename and change types and number of parameters
-    @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
+    //@RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
     public static fragment_titles newInstance(int number) {
         Bundle args = new Bundle();
         fragment_titles fragment = new fragment_titles();
@@ -56,16 +60,23 @@ public class fragment_titles extends Fragment
         }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(@Nullable Bundle savedInstanceState) {
         this.savedInstanceState = savedInstanceState;
         super.onCreate( savedInstanceState );
+        /*OnBackPressedCallback callback = new OnBackPressedCallback(true *//* enabled by default *//*) {
+            @Override
+            public void handleOnBackPressed() {
+                // Handle the back button event
+            }
+        };
+        requireActivity().getOnBackPressedDispatcher().addCallback(this, callback);*/
+
         if (getArguments() != null) {}
 
     }
     //######################################################################################################
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         v = inflater.inflate( R.layout.fragment_title, container, false );
         newlist = (ListView) v.findViewById(R.id.list);
         newlist.setOnItemClickListener( new AdapterView.OnItemClickListener() {
@@ -86,6 +97,7 @@ public class fragment_titles extends Fragment
     @Override
     public void onAttach(Context context) {
         super.onAttach( context );
+
         if (context instanceof onListViewFragmentTitle)
         {
             try {

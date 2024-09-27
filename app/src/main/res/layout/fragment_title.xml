@@ -40,12 +40,14 @@
 
         <Button
             android:id="@+id/but_add"
-            style="@android:style/Widget.Button.Inset"
-            android:layout_width="90dp"
+            style="@android:style/Widget.Material.Light.Button.Inset"
+            android:layout_width="60dp"
             android:layout_height="match_parent"
-            android:elevation="24dp"
+            android:elevation="28dp"
+            android:ellipsize="start"
             android:onClick="onClickAdd"
-            android:text="@string/add"
+            android:text="+"
+            android:textSize="24sp"
             android:visibility="visible" />
     </LinearLayout>
 

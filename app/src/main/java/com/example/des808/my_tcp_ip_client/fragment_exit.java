@@ -2,15 +2,16 @@ package com.example.des808.my_tcp_ip_client;
 
 
 import android.annotation.SuppressLint;
-import android.app.AlertDialog;
 import android.app.Dialog;
-import android.app.DialogFragment;
-import android.content.DialogInterface;
 import android.os.Bundle;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
+import androidx.fragment.app.DialogFragment;
 
 
 @SuppressLint("ValidFragment")
-public class fragment_exit extends DialogFragment{
+public class fragment_exit extends DialogFragment {
 
     @SuppressLint("ValidFragment")
     public fragment_exit(String title) {
@@ -19,24 +20,30 @@ public class fragment_exit extends DialogFragment{
         setArguments( args );
     }
 
+    @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         String title = getArguments().getString( "title" );
-        return new AlertDialog.Builder( getActivity() )
+        AlertDialog.Builder builder=new AlertDialog.Builder(getActivity());
+        builder.setIcon(android.R.drawable.ic_dialog_alert);
+        return builder.setTitle(title).setPositiveButton( "OK", (dialog, whichButton) -> {
+            ((my_tcp_ip_client) getActivity()).doPositiveClick();
+        })
+                .setNegativeButton( "Cancel", (dialog, whichButton) -> {
+                    ((my_tcp_ip_client) getActivity()).doNegativeClick();
+                }).create();
+
+
+
+        /*return new AlertDialog.Builder( getActivity() )
                 //.setIcon( R.drawable.android3d)
                 .setTitle( title )
-                .setPositiveButton( "OK", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int whichButton) {
-                        ((my_tcp_ip_client) getActivity()).doPositiveClick();
-                    }
-                } )
-                .setNegativeButton( "Cancel", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int whichButton) {
-                        ((my_tcp_ip_client) getActivity()).doNegativeClick();
-                    }
-                } ).create();
+                .setPositiveButton( "OK", (dialog, whichButton) -> {
+                    ((my_tcp_ip_client) getActivity()).doPositiveClick();
+                })
+                .setNegativeButton( "Cancel", (dialog, whichButton) -> {
+                    ((my_tcp_ip_client) getActivity()).doNegativeClick();
+                }).create();*/
     }
     }
 
