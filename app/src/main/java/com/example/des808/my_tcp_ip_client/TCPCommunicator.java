@@ -6,6 +6,8 @@ import android.os.Handler;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.example.des808.my_tcp_ip_client.interfaces.TCPListener;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -51,7 +53,6 @@ public class TCPCommunicator {
 	}
 	public static  TCPWriterErrors writeToSocket(final String i, Handler handle,Context context)
 	{
-
 		UIHandler=handle;
 		appContext=context;
 		Runnable runnable = new Runnable() {
@@ -80,7 +81,6 @@ public class TCPCommunicator {
 		Thread thread = new Thread(runnable);
 		thread.start();
 		return TCPWriterErrors.OK;
-
 	}
 
 

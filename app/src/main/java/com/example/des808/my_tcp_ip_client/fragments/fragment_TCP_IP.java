@@ -1,4 +1,4 @@
-package com.example.des808.my_tcp_ip_client;
+package com.example.des808.my_tcp_ip_client.fragments;
 
 import android.content.Context;
 import android.net.Uri;
@@ -9,6 +9,9 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+
+import com.example.des808.my_tcp_ip_client.R;
+import com.example.des808.my_tcp_ip_client.interfaces.onFragment_TCP_IP_Init;
 
 public class fragment_TCP_IP extends Fragment {
     private OnFragmentInteractionListener mListener;

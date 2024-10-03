@@ -14,11 +14,9 @@
     <string name="space" />
     <string name="xz">что-то не так</string>
     <string name="textview">какая-то хуйня</string>
-    <string name="send">Send</string>
     <string name="sdfs">абра кадабра</string>
     <string name="dvoetochie">:</string>
     <string name="vedro">Connect Vedromeda gprs.so-ro.ru:10003</string>
-    <string name="Seend">Send</string>
     <string name="zone">zone</string>
     <string name="razdel">razdel</string>
     <string name="object">object</string>
@@ -43,6 +41,29 @@
     <string name="disconnect_tcp_ip">Disconnect TCP IP</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <!-- Preference Titles -->
+    <string name="messages_header">Messages</string>
+    <string name="sync_header">Sync</string>
+
+    <!-- Messages Preferences -->
+    <string name="signature_title">Your signature</string>
+    <string name="reply_title">Default reply action</string>
+
+    <!-- Sync Preferences -->
+    <string name="sync_title">Sync email periodically</string>
+    <string name="attachment_title">Download incoming attachments</string>
+    <string name="attachment_summary_on">Automatically download attachments for incoming emails
+    </string>
+    <string name="attachment_summary_off">Only download attachments when manually requested</string>
+    <string name="e602">E602</string>
+    <string name="_00">00</string>
+    <string name="_000">000</string>
+    <string name="_4444">4444</string>
+    <string name="_class">class</string>
+    <string name="send">Send >></string>
+    <string name="description_voice_call">voice_call</string>
+    <string name="hint_input">new message</string>
+    <string name="todo">TODO</string>
 
     <!-- TODO: Remove or change this placeholder text -->
 

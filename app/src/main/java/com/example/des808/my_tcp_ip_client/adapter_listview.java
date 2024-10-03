@@ -1,7 +1,6 @@
 package com.example.des808.my_tcp_ip_client;
 
 public class adapter_listview {
-
     private String name;
     private String ipadr;
     private String port;
@@ -13,9 +12,7 @@ public class adapter_listview {
         this.port =  port;
     }
 
-    public adapter_listview() {
-
-    }
+    public adapter_listview() {}
 
     public String getName()  { return name; }
     public String getIp_adr() { return ipadr; }

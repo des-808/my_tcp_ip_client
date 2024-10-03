@@ -6,4 +6,12 @@
     <color name="colorAccent">#0d0206</color>
     <color name="backGroundMyApp">#bbbbbb</color>
     <color name="collorDark">#000000</color>
+
+
+    <color name="primary">#008577</color>
+    <color name="primary_dark">#00574B</color>
+    <color name="accent">#D81B60</color>
+
+    <color name="incoming">#FBE9E7</color>
+    <color name="outgoing">#EEEEEE</color>
 </resources>

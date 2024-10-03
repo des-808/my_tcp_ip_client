@@ -1,4 +1,4 @@
-package com.example.des808.my_tcp_ip_client;
+package com.example.des808.my_tcp_ip_client.fragments;
 
 
 import android.annotation.SuppressLint;
@@ -8,6 +8,8 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
+
+import com.example.des808.my_tcp_ip_client.my_tcp_ip_client;
 
 
 @SuppressLint("ValidFragment")

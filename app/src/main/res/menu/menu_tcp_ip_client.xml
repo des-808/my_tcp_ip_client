@@ -20,10 +20,10 @@
         app:showAsAction="always" />
 
     <!--android:icon="@drawable/icon_setting"-->
-        <item android:id="@+id/action_set_andromeda"
+       <!-- <item android:id="@+id/action_set_andromeda"
             android:checkable="true"
             android:title="@string/andromeda"
-            android:checked="false" />
+            android:checked="false" />-->
         <!--<item android:id="@+id/action_Connect_Disconnect_TCP_IP"
             android:checkable="true"
             android:title="@string/disconnect_tcp_ip"

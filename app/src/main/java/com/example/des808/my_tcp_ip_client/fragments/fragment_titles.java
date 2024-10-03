@@ -1,4 +1,4 @@
-package com.example.des808.my_tcp_ip_client;
+package com.example.des808.my_tcp_ip_client.fragments;
 
 //import android.app.Fragment;
 
@@ -16,6 +16,11 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+
+import com.example.des808.my_tcp_ip_client.CustomAdapter;
+import com.example.des808.my_tcp_ip_client.R;
+import com.example.des808.my_tcp_ip_client.adapter_listview;
+import com.example.des808.my_tcp_ip_client.interfaces.onListViewFragmentTitle;
 
 import java.util.ArrayList;
 
@@ -63,6 +68,7 @@ public class fragment_titles extends Fragment
     public void onCreate(@Nullable Bundle savedInstanceState) {
         this.savedInstanceState = savedInstanceState;
         super.onCreate( savedInstanceState );
+
         /*OnBackPressedCallback callback = new OnBackPressedCallback(true *//* enabled by default *//*) {
             @Override
             public void handleOnBackPressed() {
@@ -95,9 +101,8 @@ public class fragment_titles extends Fragment
     }
 
     @Override
-    public void onAttach(Context context) {
+    public void onAttach(@Nullable Context context) {
         super.onAttach( context );
-
         if (context instanceof onListViewFragmentTitle)
         {
             try {
@@ -113,6 +118,7 @@ public class fragment_titles extends Fragment
         if (context instanceof OnFragmentInteractionListener) {
             mListener = (OnFragmentInteractionListener) context;
         } else { throw new RuntimeException( context.toString() + " must implement OnFragmentInteractionListener" );}
+
     }
 
     @Override

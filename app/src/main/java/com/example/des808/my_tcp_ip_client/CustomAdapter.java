@@ -17,7 +17,6 @@ public class CustomAdapter extends BaseAdapter {
         inflater = (LayoutInflater)context.getSystemService( Context.LAYOUT_INFLATER_SERVICE );
         this.data = data;
     }
-
     //public CustomAdapter(fragment_titles fragment_titles, ArrayList<adapter_listview> list) { }
 
     @Override
