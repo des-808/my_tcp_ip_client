@@ -24,26 +24,23 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toTopOf="@+id/messages"
+        app:layout_constraintBottom_toTopOf="@+id/list_messages"
          />
 
-    <!--<androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/messages"
-        style="?attr/buttonBarStyle"
-        android:layout_width="match_parent"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/list_messages"
+        android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_weight="1"
-        android:clipToPadding="false"
-        android:paddingTop="@dimen/spacing_small"
-        android:paddingBottom="@dimen/spacing_small"
-        android:scrollbars="vertical"
-        app:layout_constraintBottom_toTopOf="@id/included"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:background="@color/collorDark"
+        app:layout_constraintVertical_weight="10"
+        app:layout_constraintTop_toBottomOf="@id/connect_text"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/connect_text"/>-->
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/fragmentLayout"
+        />
 
 
-<ScrollView
+<!--<ScrollView
 android:id="@+id/messages"
 style="@style/Base.TextAppearance.AppCompat"
 android:layout_width="0dp"
@@ -53,21 +50,11 @@ android:background="@color/backGroundMyApp"
 android:clipToPadding="true"
 android:fillViewport="true"
 android:scrollbarStyle="insideOverlay"
-app:layout_constraintBottom_toTopOf="@id/included"
+app:layout_constraintBottom_toTopOf="@id/frLayout"
 app:layout_constraintEnd_toEndOf="parent"
 app:layout_constraintStart_toStartOf="parent"
 app:layout_constraintTop_toBottomOf="@id/connect_text">
 
-
-<!-- <androidx.recyclerview.widget.RecyclerView
-  android:id="@+id/chatRecyclerView"
-  android:layout_width="match_parent"
-  android:layout_height="0dp"
-  android:background="@android:color/background_dark"
-  android:layout_weight="1"
-  android:scrollbars="vertical"
-  android:visibility="visible">
-</androidx.recyclerview.widget.RecyclerView>-->
 <TextView
     android:id="@+id/chatTextView"
     android:layout_width="match_parent"
@@ -84,20 +71,37 @@ app:layout_constraintTop_toBottomOf="@id/connect_text">
     android:visibility="visible"
 
     />
-</ScrollView>
+</ScrollView>-->
+   <!-- <FrameLayout
+        android:id="@+id/fragmentLayout"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:background="@color/collorDark"
+        android:layoutMode="opticalBounds"
+        android:scrollbars="none"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/messages"
+        app:layout_constraintVertical_weight="1.5" />-->
     <include
-        android:id="@+id/included"
+        android:id="@+id/fragmentLayout"
         layout="@layout/row_andromeda_send"
-
+        android:visibility="visible"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@+id/messages"
+
+        app:layout_constraintVertical_weight="1.1"
+        app:layout_constraintHorizontal_weight="1.1"
+
+        app:layout_constraintTop_toBottomOf="@+id/list_messages"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         />
 </androidx.constraintlayout.widget.ConstraintLayout>
-
+    <!--layout="@layout/row_andromeda_send"-->
 
 <!--
 layout="@layout/row_andromeda_send"

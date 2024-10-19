@@ -1,4 +1,4 @@
-package com.example.des808.my_tcp_ip_client;
+package com.example.des808.my_tcp_ip_client.adapter;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -7,13 +7,16 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
+import com.example.des808.my_tcp_ip_client.R;
+import com.example.des808.my_tcp_ip_client.TitleChatsItems;
+
 import java.util.ArrayList;
 
 public class CustomAdapter extends BaseAdapter {
     private LayoutInflater inflater;
-    private static ArrayList<adapter_listview>data;
+    private static ArrayList<TitleChatsItems>data;
 
-    public CustomAdapter(Context context, ArrayList<adapter_listview>data){
+    public CustomAdapter(Context context, ArrayList<TitleChatsItems>data){
         inflater = (LayoutInflater)context.getSystemService( Context.LAYOUT_INFLATER_SERVICE );
         this.data = data;
     }
@@ -23,10 +26,10 @@ public class CustomAdapter extends BaseAdapter {
     public int getCount(){ return data.size(); }
 
     @Override
-    public adapter_listview getItem(int position){ return data.get(position); }
+    public TitleChatsItems getItem(int position){ return data.get(position); }
 
     //@Override
-    public static adapter_listview getItemPosition(int position){ return data.get(position); }
+    public static TitleChatsItems getItemPosition(int position){ return data.get(position); }
 
     @Override
     public long getItemId(int position){return 0;}
@@ -37,7 +40,7 @@ public class CustomAdapter extends BaseAdapter {
         if (convertView == null) {
             view = inflater.inflate( R.layout.row_listview, null );
         }
-        final adapter_listview item = data.get( position );
+        final TitleChatsItems item = data.get( position );
 
         TextView textname = (TextView) view.findViewById( R.id.row_name );
         TextView textipadr = (TextView) view.findViewById( R.id.row_ipadress );
@@ -48,6 +51,8 @@ public class CustomAdapter extends BaseAdapter {
         textport.setText( item.getPort() );
         return view;
     }
+
+
 }
 
 

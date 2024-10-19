@@ -26,7 +26,6 @@ public class TCPCommunicator {
 	private static List<TCPListener> allListeners;
 	private static BufferedWriter out;
 	private static BufferedReader in;
-	public static boolean vedromeda_bool;
 	private static InputStream inSocketStream;
 	private static Socket s;
 	private static Handler UIHandler;
@@ -76,13 +75,11 @@ public class TCPCommunicator {
 					});
 				}
 			}
-
 		};
 		Thread thread = new Thread(runnable);
 		thread.start();
 		return TCPWriterErrors.OK;
 	}
-
 
 	public static void addListener(TCPListener listener)
 	{
@@ -106,17 +103,6 @@ public class TCPCommunicator {
 			e.printStackTrace();
 		}
 	}
-
-	public static void vedromedaBool(boolean x) {
-		if (x) {
-			vedromeda_bool = true;
-			//EventBusTransmitterInt(4);
-		} else {
-			vedromeda_bool = false;
-			//EventBusTransmitterInt(5);
-		}
-	}
-
 	public static String getServerHost() {
 		return serverHost;
 	}
@@ -130,63 +116,58 @@ public class TCPCommunicator {
 		TCPCommunicator.serverPort = serverPort;
 	}
 
-
 	public class InitTCPClientTask extends AsyncTask<Void, Void, Void>
 	{
 		public InitTCPClientTask() { }
-
 		@Override
 		protected Void doInBackground(Void... params) {
 			try
 			{
 				   s = new Socket(getServerHost(), getServerPort());
 		          in = new BufferedReader(new InputStreamReader(s.getInputStream()));
-		         out = new BufferedWriter(new OutputStreamWriter(s.getOutputStream()));
-
+				 out = new BufferedWriter(new OutputStreamWriter(s.getOutputStream()));
+				 StringBuilder inMsg = new StringBuilder();
+				final int length = 65535;
+				char[] charBuffer = new char[length];
 		         for(TCPListener listener:allListeners) listener.onTCPConnectionStatusChanged(true);
+
 		        while(true)
 		        {
-
-		            if (vedromeda_bool){
-						int inMsgInt = in.read();
-						char inMsgChar = (char)inMsgInt;
-						Log.d("TcpClient", "received Int: " + inMsgInt);
-						if(inMsgInt != -1 )
-							/*for (TCPListener listener : allListeners)
-								listener.onTCPMessageRecievedInt( inMsgInt );*/
-							for (TCPListener listener : allListeners)
-								listener.onTCPMessageRecievedChar( inMsgChar );
-					}else{
-		        			String inMsg = in.readLine();
-						Log.d("TcpClient", "received String: " + inMsg);
-							if(inMsg!=null)
-							{
-								for(TCPListener listener:allListeners)
-									listener.onTCPMessageRecieved(inMsg);
-							}
-						}
+					/*int count = in.read(charBuffer, 0, length);
+					if(count >= 0){
+						for (TCPListener listener : allListeners) listener.onTCPMessageRecievedCharBuffer(charBuffer,count,length);//*/
+						/////
+						int count = in.read(charBuffer, 0, 65535);
+						int index = 0;
+						if(count >= 0){
+							do {
+								if((charBuffer[index])!='\n'&&(charBuffer[index])!=0x0D&&(charBuffer[index]>=0&&(charBuffer[index])<32))
+								{
+									inMsg.append(DecimalToHex.toHex(charBuffer[index]));
+								}
+								else
+								{
+									inMsg.append((charBuffer[index]));
+								}
+								index++;
+							}while (count!=index);
+							for (TCPListener listener : allListeners) listener.onTCPMessageRecieved(String.valueOf((inMsg)));//
+							inMsg.delete(0,count); // обнуляем буфер
+							count = -1;// обнуляем счетчик
+					}
 		        }
-			} catch (UnknownHostException e) {
-		        e.printStackTrace();
-			} catch (IOException e) {
-		        e.printStackTrace();
-		    }
-
+			}
+			catch (UnknownHostException e) 		{e.printStackTrace();}
+			catch (IOException e) 				{e.printStackTrace();}
+			catch (IndexOutOfBoundsException e)	{e.printStackTrace();}
 			return null;
-
 		}
-
 	}
 	public enum TCPWriterErrors{UnknownHostException,IOException,otherProblem,OK}
-
-
-
 
 	/*public static void EventBusTransmitterInt(int idf){
 		message_event event = new message_event();
 		event.setMessage( idf );
 		EventBus.getDefault().post( event );
-
 	}*/
-
 }

@@ -17,9 +17,9 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import com.example.des808.my_tcp_ip_client.CustomAdapter;
+import com.example.des808.my_tcp_ip_client.adapter.CustomAdapter;
 import com.example.des808.my_tcp_ip_client.R;
-import com.example.des808.my_tcp_ip_client.adapter_listview;
+import com.example.des808.my_tcp_ip_client.TitleChatsItems;
 import com.example.des808.my_tcp_ip_client.interfaces.onListViewFragmentTitle;
 
 import java.util.ArrayList;
@@ -33,7 +33,7 @@ public class fragment_titles extends Fragment
     public Toast toast;
     public CharSequence message;
     public ListView newlist;
-    private ArrayList<adapter_listview> list;
+    private ArrayList<TitleChatsItems> list;
     private CustomAdapter C_Adapter;
     private ListView listView;
     private AdapterView<?> arg0;

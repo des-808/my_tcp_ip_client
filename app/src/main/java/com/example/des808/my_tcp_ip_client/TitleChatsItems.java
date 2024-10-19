@@ -1,18 +1,18 @@
 package com.example.des808.my_tcp_ip_client;
 
-public class adapter_listview {
+public class TitleChatsItems {
     private String name;
     private String ipadr;
     private String port;
     private int    ID;
 
-    public adapter_listview(String name,String ipadr,String port){
+    public TitleChatsItems(String name, String ipadr, String port){
         this.name =  name;
         this.ipadr = ipadr;
         this.port =  port;
     }
 
-    public adapter_listview() {}
+    public TitleChatsItems() {}
 
     public String getName()  { return name; }
     public String getIp_adr() { return ipadr; }

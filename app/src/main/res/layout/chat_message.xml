@@ -21,10 +21,10 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toTopOf="@+id/messages"
+        app:layout_constraintBottom_toTopOf="@+id/messages_text"
         />
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/messages"
+        android:id="@+id/messages_text"
         style="?attr/buttonBarStyle"
         android:layout_width="match_parent"
         android:layout_height="0dp"

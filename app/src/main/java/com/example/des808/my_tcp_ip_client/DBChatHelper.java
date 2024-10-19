@@ -5,24 +5,24 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.provider.BaseColumns;
 
-public class DBChat  extends SQLiteOpenHelper
+public class DBChatHelper extends SQLiteOpenHelper
         implements BaseColumns {
 
     public static final String DB_NAME = "chat.db";
-    public static final String TABLE_NAME = "mesages";
+    private static final int SCHEMA = 2; // версия базы данных
+    public static final String TABLE_NAME = "chatName";// название таблицы в бд
+    // названия столбцов
+
+    public static final String MESSAGE_ID = "_id";
     public static final String MESSAGE_IN = "messageIn";
     public static final String MESSAGE_OUT = "messageOut";
     public static final String DATA_IN_MESSAGE = "dataInMessage";
     public static final String DATA_OUT_MESSAGE = "dataOutMessage";
-    private Context context;
 
 
-
-
-    public DBChat(Context context) {
+    public DBChatHelper(Context context) {
         // конструктор суперкласса
-        super(context, DB_NAME, null, 1);
-        this.context = context;
+        super(context, DB_NAME, null, SCHEMA);
     }
 
     @Override
@@ -41,4 +41,6 @@ public class DBChat  extends SQLiteOpenHelper
         db.execSQL( " DROP TABLE IF EXISTS " + TABLE_NAME );
         onCreate( db );
     }
+
+
 }
