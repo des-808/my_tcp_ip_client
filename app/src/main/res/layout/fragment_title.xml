@@ -18,7 +18,7 @@
         android:layout_height="0dp"
         android:text="@string/serverlist"
         android:textAlignment="center"
-        android:textColor="@color/colorPrimaryDark"
+        android:textColor="@color/colorPrimaryGreen"
         android:textSize="36sp"
         android:textStyle="italic"
         app:layout_constraintHorizontal_weight="5"

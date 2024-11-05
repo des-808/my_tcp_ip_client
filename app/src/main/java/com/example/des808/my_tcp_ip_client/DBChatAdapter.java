@@ -6,6 +6,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,97 +16,151 @@ public class DBChatAdapter {
     private DBChatHelper dbChatHelper;
     private SQLiteDatabase db;
 
-
     public DBChatAdapter(Context con){
         dbChatHelper = new DBChatHelper(con.getApplicationContext());
-
     }
 
-    public DBChatAdapter open(){
+    public DBChatAdapter openBd(){//открытие БД
         db = dbChatHelper.getWritableDatabase();
         return this;
     }
 
-    public void close(){
+    public void closeBd(){//закрытие БД
         dbChatHelper.close();
     }
 
-
-    /*//открытие БД
-    public void openBd(){db = dbChatHelper.getWritableDatabase();}
-
-    //закрытие БД
-    public void closeBd(){db.close();}*/
-
-
-    private Cursor getAllEntries(String TableName){
-        String[] columns = new String[] {DBChatHelper.MESSAGE_ID, DBChatHelper.MESSAGE_IN, DBChatHelper.DATA_IN_MESSAGE, DBChatHelper.MESSAGE_OUT, DBChatHelper.DATA_OUT_MESSAGE};
-        return  db.query(TableName, columns, null, null, null, null, null);
+    public void createTableIfNotExists() {
+        openBd();
+        db.execSQL("CREATE TABLE IF NOT EXISTS " + DBChatHelper.TABLE_NAME + " (" +
+                DBChatHelper.MESSAGE_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                DBChatHelper.MESSAGE_OUTGOING + " INTEGER, " +
+                DBChatHelper.MESSAGE_IN + " TEXT, " +
+                DBChatHelper.MESSAGE_TIME + " TEXT, " +
+                DBChatHelper.MESSAGE_OUT + " TEXT);");
+        closeBd();
     }
 
-    public List<Chat> getMessages(String TableName) {
-        ArrayList<Chat> messages = new ArrayList<>();
-        Cursor cursor = getAllEntries(TableName);
-        while (cursor.moveToNext()){
-            @SuppressLint("Range") int id = cursor.getInt(cursor.getColumnIndex(DBChatHelper.MESSAGE_ID));
-            @SuppressLint("Range") String msg_in = cursor.getString(cursor.getColumnIndex(DBChatHelper.MESSAGE_IN));
-            @SuppressLint("Range") String data_msg_in = cursor.getString(cursor.getColumnIndex(DBChatHelper.DATA_IN_MESSAGE));
-            @SuppressLint("Range") String msg_out = cursor.getString(cursor.getColumnIndex(DBChatHelper.MESSAGE_OUT));
-            @SuppressLint("Range") String data_msg_out = cursor.getString(cursor.getColumnIndex(DBChatHelper.DATA_OUT_MESSAGE));
-            messages.add(new Chat(id, msg_in, data_msg_in, msg_out, data_msg_out));
-        }
+    @SuppressLint("Range")
+    public ArrayList<Chat> getMessages() {
+        openBd();
+        ArrayList<Chat> messagesList = new ArrayList<>();
+        String[] columns = new String[] {DBChatHelper.MESSAGE_ID,DBChatHelper.MESSAGE_OUTGOING, DBChatHelper.MESSAGE_IN, DBChatHelper.MESSAGE_TIME, DBChatHelper.MESSAGE_OUT};
+        Cursor cursor = db.query(DBChatHelper.TABLE_NAME, columns, null, null, null, null, null);
+            while (cursor.moveToNext()) {
+                /*if (cursor.isLast()) {break;}*/
+                Chat chat;
+                String msg = "",time_msg = "";
+                int id = cursor.getInt(cursor.getColumnIndex(DBChatHelper.MESSAGE_ID));
+                @SuppressLint("Range") boolean outgoing = cursor.getInt(cursor.getColumnIndex(DBChatHelper.MESSAGE_OUTGOING)) == 1;
+                if (outgoing) {
+                    msg = cursor.getString(cursor.getColumnIndex(DBChatHelper.MESSAGE_OUT));
+                    time_msg = cursor.getString(cursor.getColumnIndex(DBChatHelper.MESSAGE_TIME));
+                    chat = new Chat( id, msg, time_msg,outgoing);
+                    messagesList.add(chat);
+                }else {
+                    msg = cursor.getString(cursor.getColumnIndex(DBChatHelper.MESSAGE_IN));
+                    time_msg = cursor.getString(cursor.getColumnIndex(DBChatHelper.MESSAGE_TIME));
+                    chat = new Chat( id, msg, time_msg,outgoing);
+                    messagesList.add(chat);
+                }
+            }
         cursor.close();
-        return messages;
+        closeBd();
+        return messagesList;
     }
 
-    public long getCount(String TableName){
-        return DatabaseUtils.queryNumEntries(db, TableName);
+    public long getCount(){
+        openBd();
+        long count = DatabaseUtils.queryNumEntries(db, DBChatHelper.TABLE_NAME);;
+        closeBd();
+        return count;
     }
 
-    public Chat getMessage(String TableName,long id){
+    @SuppressLint("Range")
+    public Chat getMessage(String TableName, long id){
+        openBd();
         Chat chat = null;
+        String msg = "",time_msg = "";
         String query = String.format("SELECT * FROM %s WHERE %s=?",TableName, DBChatHelper._ID);
         Cursor cursor = db.rawQuery(query, new String[]{ String.valueOf(id)});
         if(cursor.moveToFirst()){
-            @SuppressLint("Range") String msg_in = cursor.getString(cursor.getColumnIndex(DBChatHelper.MESSAGE_IN));
-            @SuppressLint("Range") String data_msg_in = cursor.getString(cursor.getColumnIndex(DBChatHelper.DATA_IN_MESSAGE));
-            @SuppressLint("Range") String msg_out = cursor.getString(cursor.getColumnIndex(DBChatHelper.MESSAGE_OUT));
-            @SuppressLint("Range") String data_msg_out = cursor.getString(cursor.getColumnIndex(DBChatHelper.DATA_OUT_MESSAGE));
-            chat = new Chat( msg_in, data_msg_in, msg_out, data_msg_out);
+            @SuppressLint("Range") boolean outgoing = cursor.getInt(cursor.getColumnIndex(DBChatHelper.MESSAGE_OUTGOING)) == 1;
+            time_msg = cursor.getString(cursor.getColumnIndex(DBChatHelper.MESSAGE_TIME));
+            if (outgoing) {
+                msg = cursor.getString(cursor.getColumnIndex(DBChatHelper.MESSAGE_OUT));
+                chat = new Chat(  msg, time_msg,outgoing);
+            }else {
+                msg = cursor.getString(cursor.getColumnIndex(DBChatHelper.MESSAGE_IN));
+                chat = new Chat(  msg, time_msg,outgoing);
+            }
         }
+
         cursor.close();
+        closeBd();
         return  chat;
     }
 
     // Добавление нового сообщения
-    public long addMessage(String TableName,Chat  msg_in) {
+    public long addDBMessage(Chat  msg_in) {
+        openBd();
         ContentValues values = new ContentValues();
+        values.put(DBChatHelper.MESSAGE_OUTGOING, msg_in.getOutgoing());
         values.put(DBChatHelper.MESSAGE_IN, msg_in.getMessage_in());
-        values.put(DBChatHelper.DATA_IN_MESSAGE, msg_in.getData_in_message());
+        values.put(DBChatHelper.MESSAGE_TIME, msg_in.getMessage_time());
         values.put(DBChatHelper.MESSAGE_OUT, msg_in.getMessage_out());
-        values.put(DBChatHelper.DATA_OUT_MESSAGE, msg_in.getData_out_message());
-
-        long res = db.insert(TableName, null, values);
+        long res = db.insert(DBChatHelper.TABLE_NAME, null, values);
+        closeBd();
         return res;
     }
 
     // Удаление сообщения
-    public int deleteMessage(String TableName,int id) {
+    public int deleteMessage(int id) {
+        openBd();
         String where = String.format("%s=%d", DBChatHelper._ID, id);
-        int res = db.delete(TableName, where, null);
+        int res = db.delete(DBChatHelper.TABLE_NAME, where, null);
+        closeBd();
         return res;
+    }
+
+    public void deleteMesagesAllChat(){
+        openBd();
+        db.execSQL("DROP TABLE IF EXISTS " + DBChatHelper.TABLE_NAME);
+        closeBd();
     }
 
     // Редактирование сообщения
-    public int updateMessage(String TableName,int id, Chat msg_in) {;
+    public int updateMessage(int id, Chat msg_in) {;
+        openBd();
         ContentValues values = new ContentValues();
+        values.put(DBChatHelper.MESSAGE_OUTGOING, msg_in.getOutgoing());
         values.put(DBChatHelper.MESSAGE_IN, msg_in.getMessage_in());
-        values.put(DBChatHelper.DATA_IN_MESSAGE, msg_in.getData_in_message());
+        values.put(DBChatHelper.MESSAGE_TIME, msg_in.getMessage_time());
         values.put(DBChatHelper.MESSAGE_OUT, msg_in.getMessage_out());
-        values.put(DBChatHelper.DATA_OUT_MESSAGE, msg_in.getData_out_message());
 
         String where = String.format("%s=%d", DBChatHelper._ID, id);
-        int res = db.update(TableName, values, where, null);
+        int res = db.update(DBChatHelper.TABLE_NAME, values, where, null);
+        closeBd();
         return res;
     }
+
+
+// Вывод списка чатов
+    public List<String> getChats() {
+        openBd();
+        List<String> tables = new ArrayList<>();
+        Cursor cursor = db.rawQuery("SELECT name FROM sqlite_master WHERE type='table'", null);
+        if (cursor != null) {
+            cursor.moveToFirst();
+            do {
+                String tableName = cursor.getString(0);
+                tables.add(tableName);
+                Log.d("TABLE_NAMES", tableName);
+            } while (cursor.moveToNext());
+            cursor.close();
+        }
+        closeBd();
+        return tables;
+    }
+
+
 }

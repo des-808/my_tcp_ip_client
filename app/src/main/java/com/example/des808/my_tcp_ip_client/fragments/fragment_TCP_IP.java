@@ -50,13 +50,13 @@ public class fragment_TCP_IP extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         //Log.d(LOG_TAG, "onCreate FragmentTCP_IP");
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
        View v = inflater.inflate( R.layout.fragment_tcp_ip, container, false );
-
         return v;}
 
     @Override
@@ -79,6 +79,7 @@ public class fragment_TCP_IP extends Fragment {
         mListener = null;
         //Log.d(LOG_TAG, "onDeath FragmentTCP_IP");
         mFragmentTCPIPInit.on_FragmentTCP_IP_Disconnect();
+
     }
 
     public interface OnFragmentInteractionListener {

@@ -7,13 +7,14 @@ import android.app.ActionBar;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.DialogInterface;
+//import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Vibrator;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -21,12 +22,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.EditText;
-import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -48,7 +49,6 @@ import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Objects;
 
 //import static com.example.des808.my_tcp_ip_client.TCPCommunicator.removeAllListeners;
@@ -65,40 +65,33 @@ public class my_tcp_ip_client extends AppCompatActivity
         TCPListener,
         OnSettingsFragment,
                 //fragment_TCP_IP.OnFragmentItemClickListenerSwitch,
-                fragment_TCP_IP.OnFragmentInteractionListener{
+                fragment_TCP_IP.OnFragmentInteractionListener
+{
 
     private static final String LOG_TAG = "LOG_TAG";
-    private ArrayList<TitleChatsItems> list;
+    //private ArrayList<TitleChatsItems> list;
     private CustomAdapter C_Adapter;
-    private ListView listView;
+    private final boolean IN_MSG = false;
+    private final boolean OUT_MSG = true;
     final int MENU_RENAME = 1;
     final int MENU_DELETE = 2;
-    final int MENU_CANCEL = 3;
+   // final int MENU_CANCEL = 3;
     final int ACK = 6;
     final int NACK = 21;
     final int SUCCESSFULLY = 0x14;
     public boolean vedromeda_bool;
     public boolean connectToServer = false;
-    public int i;
-    public int x;
     public String mMessage;
-    DBHelper dbHelper;
-    DBChatHelper dbChatHelper;
     public Toast toast;
-    public String npc;
-    public String param1, param2, param3;
+    public String table_name, param2, param3;
     public TitleChatsItems items;
-    public TextView chatText;
     ListView LVMain;
 
-    public CharSequence message;
     public ActionBar actionBar;
     private ProgressDialog dialog;
-    private RecyclerView chatRecyclerView;
-    public static String currentUserName;
     private final Handler UIHandler = new Handler();
-    public MenuItem menu_andromeda;
     public MenuItem menu_switch_btn;
+    public MenuItem menu_clearChat;
 
     public EditText object,clas,razd,schs;
     public ImageButton btnSend_tx;
@@ -108,7 +101,6 @@ public class my_tcp_ip_client extends AppCompatActivity
     fragment_titles fragTitles;
     fragment_TCP_IP fragTCP_IP;
     FragmentManager fManager;
-    FragmentTransaction fTrans;
     View sv;
 
     //private static final String PREFS_FILE = "my_tcp_ip_client_preferences";
@@ -117,14 +109,16 @@ public class my_tcp_ip_client extends AppCompatActivity
     private static final int PREFS_MODE = Context.MODE_PRIVATE;
 
     SharedPreferences sharedPreferences;
-    SharedPreferences.Editor prefEditor;
+    //SharedPreferences.Editor prefEditor;
     Preferences_Class preferences_class;
 
-    ArrayList<MessageChat> chats = new ArrayList<MessageChat>();
+    //ArrayList<MessageChat> chatsList = new ArrayList<MessageChat>();
+    ArrayList<Chat> chatsList = new ArrayList<>();
     RecyclerView recyclerView;//создаем переменную для отображения сообщений
     Vibrator vibrator;
 
-    DBChatAdapter adapter; //создаем переменную для работы с базой данных
+    DBChatAdapter db_chat_Adapter; //создаем переменную для работы с базой данных
+    MessageAdapter messageAdapter;//создаем переменную для работы с clickable
 
    /* void  boolean isHaveVibrate(){//Проверка наличия вибрации
         return vibrator.hasVibrator();//если нет вибрации то возвращаем false
@@ -133,56 +127,51 @@ public class my_tcp_ip_client extends AppCompatActivity
     @Override
     public void on_ListViewFragmentTitleInit() {
         //сработает когда запустится фрагмент fragment_title
-        refreshList();//перезагружает список
-        final ListView newlist = (ListView) findViewById( R.id.list );//fragment_title
+        refreshTitleList();//перезагружает список
+        final ListView newlist = findViewById( R.id.list );//fragment_title
         registerForContextMenu( newlist ); //если  раньше запускать будет ошибка. фрагменты не мгновенно запускаются
     }
 
     @Override
     public void on_FragmentTCP_IP_Init() {
+        menu_clearChat.setVisible(true);
         //сработает когда запустится фрагмент fragment_tcp_ip
         is_fragment_TcpIP = true; //флаг наличия запущенного фрагмента
-        String xparam = param1+"  |  "+param2 + ":" + param3;
-        TextView x = (TextView) findViewById( R.id.connect_text );
+        String xparam = table_name +"  |  "+param2 + ":" + param3;
+        TextView x = findViewById( R.id.connect_text );
         x.setText( xparam );
-        //EditText y = (EditText) findViewById( R.id.EChat_Send );
-        //y.setText( "" );
-        object =     (EditText) findViewById( R.id.editObjekt );
-        clas =       (EditText) findViewById( R.id.editClass );
-        razd =       (EditText) findViewById( R.id.editRazd );
-        schs =       (EditText) findViewById( R.id.editSchs );
-        btnSend_tx = (ImageButton) findViewById( R.id.buttonSend_tx );
-        //sw = (Switch) findViewById(R.id.switch1);
+        object =     findViewById( R.id.editObjekt );
+        clas =       findViewById( R.id.editClass );
+        razd =       findViewById( R.id.editRazd );
+        schs =       findViewById( R.id.editSchs );
+        btnSend_tx = findViewById( R.id.buttonSend_tx );
         // начальная инициализация списка
-        // initTestChatRecyclerView();
-        List<String> list = new ArrayList<>();
         initRecyclerView();
         clearRecyclerView();
         ConnectToServer();
+        chatsList.addAll(db_chat_Adapter.getMessages());//добавляем сообщения из БД в список
+
     }
     private  void initRecyclerView(){
         recyclerView = findViewById(R.id.list_messages);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        // создаем адаптер
-        MessageAdapter adapter = new MessageAdapter(this, chats);
-        // устанавливаем для списка адаптер
-        recyclerView.setAdapter(adapter);
+        recyclerView.setAdapter(messageAdapter);// устанавливаем для списка адаптер
     }
-
-    public void addChatMessage(String i){
-Chat chat = new Chat(param1);
-MessageChat mChat = new MessageChat(param1,i);
-
-        chats.add(mChat);
-            chat.setMessage_in(mChat.getMessage());
-            chat.setData_in_message(mChat.getTime());
-            chat.setMessage_out("ни чего не отправляю");
-            chat.setData_out_message("ни в какое время");
-        adapter.open();
-     // long count = adapter.getCount(param1);
-      //tost(String.valueOf(count));
-        adapter.addMessage(param1,chat);
-        adapter.close();
+    /*TODO
+    *  String i - текст сообщения
+    * boolean in_out - true - исходящие сообщения output = true
+    * boolean in_out - false - входящие сообщения input = false
+    * */
+    public void addChatMessage(String i ,boolean in_out){
+        Chat chat = new Chat(in_out);//создаем переменную для отображения сообщений в бд
+        chat.setMessage_time(MessageTime.getTime());
+        if (!in_out){//true - входящие сообщения
+            chat.setMessage_in(i);
+        }else{//false - исходящие сообщения
+            chat.setMessage_out(i);
+        }
+        chatsList.add(chat);//выводим сообщение в список
+        db_chat_Adapter.addDBMessage(chat);//сохраняем сообщение в БД
         refreshChatListView();
     }
     @SuppressLint("NotifyDataSetChanged")
@@ -192,27 +181,21 @@ MessageChat mChat = new MessageChat(param1,i);
     }
     @SuppressLint("NotifyDataSetChanged")
     private void clearRecyclerView() {
-        chats.clear();
+        chatsList.clear();
         Objects.requireNonNull(recyclerView.getAdapter()).notifyDataSetChanged();
-    }
-    private void initTestChatRecyclerView() {
-        chats.add(new MessageChat (param1,"Бразилия"));
-        chats.add(new MessageChat (param1,"Аргентина"));
-        chats.add(new MessageChat (param1,"Колумбия"));
-        chats.add(new MessageChat (param1,"Уругвай"));
-        chats.add(new MessageChat (param1,"Чили"));
     }
 
     @Override
     public void on_FragmentTCP_IP_Disconnect(){
         is_fragment_TcpIP = false;//флаг отсутствия запущенного фрагмента
+        menu_clearChat.setVisible(false);//скрываем кнопку удаления чата
         DisconnectToServer();
     }
 
-    @Override
-    public void on_FragmentTCP_IP_Switch() {
-        tost("Сработка");
-    }
+    //@Override
+    //public void on_FragmentTCP_IP_Switch() {
+    //    tost("Сработка");
+    //}
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate( savedInstanceState );
@@ -221,45 +204,57 @@ MessageChat mChat = new MessageChat(param1,i);
         actionBar = this.getActionBar();
         fragTitles = new fragment_titles();
         fragTCP_IP = new fragment_TCP_IP();
-        final FrameLayout edit = (FrameLayout) findViewById( R.id.FrLay );
+        //final FrameLayout edit = findViewById( R.id.FrLay );
         sv = findViewById(R.id.FrLay);
+
         //////////////////////////////////////////////////
         sharedPreferences = getSharedPreferences(PREFS_FILE, PREFS_MODE);
         preferences_class = new Preferences_Class();
         preferences_class.setAndromeda(sharedPreferences.getBoolean(KEY_ANDROMEDA,false));
+        ////////////////////////////////////////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////////////////////////////
+        db_chat_Adapter = new DBChatAdapter(this);
+        messageAdapter = new MessageAdapter( chatsList);
+        messageAdapter.setOnItemClickListener((position, view, chat) -> {
+            //tost( "Clicked on " + position);
+            //Drawable foreground = view.getForeground();
+            //view.setForeground(foreground);
 
-        //////////////////////////////////////////////////
-        adapter = new DBChatAdapter(this);
-        //////////////////////////////////////////////////
+            //var xx = view.getId();
+            //view.setBackgroundColor(Color.parseColor("#0000FF"));
+
+            //tost(chat.getMessage_out());
+            String msg = chat.isOutgoing()?chat.getMessage_out(): chat.getMessage_in();
+
+            tost(msg);
+
+            Log.d(LOG_TAG, "onItemClick " + position);
+        });
+
+        messageAdapter.setOnItemLongClickListener((position, view, chat) -> {
+            //tost( "LongClicked on " + position);
+            Log.d(LOG_TAG, "onItemLongClick " + position);
+            return true;
+        });
+
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////////////////////////////
         fManager = getSupportFragmentManager();
         if(null == savedInstanceState){
             fManager.beginTransaction()
                     .addToBackStack("fragment_titles")
                     .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
                     .add(R.id.FrLay,fragTitles,"fragment_titles")
-                    //.replace(R.id.FrLay,fragTitles,"fragment_titles")
                     .commit();
         }
-        //fManager.beginTransaction().setTransition(FragmentTransaction.TRANSIT_FRAGMENT_MATCH_ACTIVITY_OPEN).add(R.id.FrLay,new fragment_titles()).addToBackStack("fragment_titles").commit();
         //Log.d(LOG_TAG, "onCcreate");
     }
 
-    /*public void save(View view){
-        adapter.open();
-        //chats.add();
-            adapter.addMessage(param1,chat);
-            //adapter.updateMessage(user);
-        adapter.close();
-    }*/
-
     @Override
-    protected void onResume() {super.onResume();}
+    protected void onResume() {super.onResume();
 
-    /*private void initChatRecyclerView() {
-        fTrans = getSupportFragmentManager().beginTransaction();
-        chatRecyclerView = findViewById(R.id.chatRecyclerView);
-        chatRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-    }*/
+    }
 
     @Override
     protected void onStart() {super.onStart();}
@@ -268,6 +263,7 @@ MessageChat mChat = new MessageChat(param1,i);
     public void onFragmentInteraction(Uri uri) {
         tost("onFragmentInteraction");
     }
+
 
     public void replaceFragment(Fragment fragment, String tag){
         Fragment currentFragment = fManager.findFragmentById(R.id.FrLay);
@@ -292,14 +288,13 @@ MessageChat mChat = new MessageChat(param1,i);
             dialogFragment = new fragment_exit( "Так ты точно хочешь выйти???" );
             dialogFragment.show( fManager, "dialog" );
         }
-
     }
     @Override
     public void on_SettingsFragment(Preferences_Class p_class){
         //////////////////////////////////////////////////
         preferences_class.setAndromeda(p_class.getAndromeda());
         Snackbar.make(sv, String.valueOf(preferences_class.getAndromeda()), Snackbar.LENGTH_SHORT).show();
-        vedromeda_bool = preferences_class.getAndromeda();;
+        vedromeda_bool = preferences_class.getAndromeda();
     }
 
     public void doPositiveClick() {this.finish();}
@@ -322,18 +317,22 @@ MessageChat mChat = new MessageChat(param1,i);
         //Log.d(LOG_TAG, "onDestroy");
         try {
             DisconnectToServer();
-        }catch (Exception e){}
+            DisconnectToServer();
+        }catch (Exception e) {
+            Log.d(LOG_TAG, String.valueOf(e));
+        }
     }
 
     public void onClickBtnAdd(View v) {
-        //создаём аллерт дилог нового подключения
+        //создаём аллерт диалог нового подключения
         openAddDialog();
     }
 
-    private void refreshList() {
-        list = DBManager.getInstance( this ).getAllContacts();
+    private void refreshTitleList() {
+       ArrayList<TitleChatsItems> list = DBManager.getInstance( this ).getAllContacts();
+        //list = DBManager.getInstance( this ).getAllContacts();
         C_Adapter = new CustomAdapter( this, list );
-        LVMain = (ListView) findViewById( R.id.list );
+        LVMain = findViewById( R.id.list );
         LVMain.setAdapter( C_Adapter );
     }
 
@@ -353,10 +352,11 @@ MessageChat mChat = new MessageChat(param1,i);
         items = C_Adapter.getItem( position );
         //DBManager.getInstance( getApplicationContext() ).getAllContacts(items);
         HashMap<String, String> values = (DBManager.getInstance( getApplicationContext() ).readContact( position ));
-        param1 = values.get( "param1" );
+        table_name = values.get( "param1" );
         param2 = values.get( "param2" );
         param3 = values.get( "param3" );
         //Log.d(LOG_TAG, String.valueOf( xparam ) );
+        ConnectToTable();// создаём или добавляем таблицу в базу
         onStartFragmentTCP_IP();
     }
     public void onStartFragmentTCP_IP() {
@@ -365,10 +365,10 @@ MessageChat mChat = new MessageChat(param1,i);
 
     public void sendTx(View v)  {
         vibrator.vibrate(100);
-            object = (EditText) findViewById(R.id.editObjekt);
-            clas = (EditText) findViewById(R.id.editClass);
-            razd = (EditText) findViewById(R.id.editRazd);
-            schs = (EditText) findViewById(R.id.editSchs);
+            object = findViewById(R.id.editObjekt);
+            clas = findViewById(R.id.editClass);
+            razd = findViewById(R.id.editRazd);
+            schs = findViewById(R.id.editSchs);
             String e_object = object.getText().toString();
             String e_clas = clas.getText().toString();
             String e_razd = razd.getText().toString();
@@ -379,7 +379,7 @@ MessageChat mChat = new MessageChat(param1,i);
             char i = (char) 20;
             E_text = x + E_text + i;//
             if (TCPCommunicator.writeToSocket(E_text, UIHandler, this) == TCPCommunicator.TCPWriterErrors.OK) {
-                addChatMessage(E_text);
+                addChatMessage(E_text,OUT_MSG);
             } else {
                 tost("ошибка передачи сообщения");
             }
@@ -387,15 +387,16 @@ MessageChat mChat = new MessageChat(param1,i);
 
     public void sendChatTx(View v)  {
         vibrator.vibrate(500);
-            EditText  E_Send = (EditText) findViewById( R.id.EChat_Send );
+            EditText  E_Send = findViewById( R.id.EChat_Send );
             String E_text = E_Send.getText().toString();
-            if(E_text.length()==0) {
+            if(E_text.isEmpty()) {
+            //if(E_text.length()==0) {
                 Toast.makeText(this, "Please enter text", Toast.LENGTH_SHORT).show();
                 return;
             }
             E_Send.setText( "" );
             if (TCPCommunicator.writeToSocket(E_text, UIHandler, this) == TCPCommunicator.TCPWriterErrors.OK) {
-                addChatMessage(E_text);
+                addChatMessage(E_text,OUT_MSG);
             } else {
                 tost("ошибка передачи сообщения");
             }
@@ -403,9 +404,9 @@ MessageChat mChat = new MessageChat(param1,i);
     }
 
     @Override
-    public boolean onContextItemSelected(MenuItem item) {
+    public boolean onContextItemSelected(@NonNull MenuItem item) {
         AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
-        int position = info.position;
+        int position = info != null ? info.position : 0;
         items = C_Adapter.getItem( position );
         switch (item.getItemId()) {
             case MENU_RENAME:
@@ -431,31 +432,23 @@ MessageChat mChat = new MessageChat(param1,i);
     public void openAddDialog() {
         LayoutInflater dlgInfater = (LayoutInflater) getSystemService( Context.LAYOUT_INFLATER_SERVICE );
         View root = dlgInfater.inflate( R.layout.row_pod_menu, null );
-        final EditText name_ = (EditText) root.findViewById( R.id.detailsName );
-        final EditText ipadr_ = (EditText) root.findViewById( R.id.detailsIpAdr );
-        final EditText port_ = (EditText) root.findViewById( R.id.detailsPort );
+        final EditText name_ =  root.findViewById( R.id.detailsName );
+        final EditText ipadr_ = root.findViewById( R.id.detailsIpAdr );
+        final EditText port_ =  root.findViewById( R.id.detailsPort );
 
         final AlertDialog.Builder builder = new AlertDialog.Builder( this );
         builder.setView( root );
         builder.setMessage( "Добавить запись" );
 
-        builder.setPositiveButton( "Сохранить", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int id) {
-                TitleChatsItems item = new TitleChatsItems(
-                        name_.getText().toString(),
-                        ipadr_.getText().toString(),
-                        port_.getText().toString() );
-                DBManager.getInstance( getApplicationContext() ).addContact( item );
-                //list.add( item );
-                refreshList();
-            }
-        } ).setNegativeButton( "Отмена", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int id) {
-                dialog.cancel();
-            }
-        } );
+        builder.setPositiveButton( "Сохранить", (dialog, id) -> {
+            TitleChatsItems item = new TitleChatsItems(
+                    name_.getText().toString(),
+                    ipadr_.getText().toString(),
+                    port_.getText().toString() );
+            DBManager.getInstance( getApplicationContext() ).addContact( item );
+            //list.add( item );
+            refreshTitleList();
+        }).setNegativeButton( "Отмена", (dialog, id) -> dialog.cancel());
         builder.setCancelable( false );
         builder.create();
         builder.show();
@@ -464,9 +457,9 @@ MessageChat mChat = new MessageChat(param1,i);
     public void openRemoveDialog(final TitleChatsItems item) {
         LayoutInflater dlgInfater = (LayoutInflater) getSystemService( Context.LAYOUT_INFLATER_SERVICE );
         View root = dlgInfater.inflate( R.layout.row_pod_menu, null );
-        final EditText name_ = (EditText) root.findViewById( R.id.detailsName );
-        final EditText ipadr_ = (EditText) root.findViewById( R.id.detailsIpAdr );
-        final EditText port_ = (EditText) root.findViewById( R.id.detailsPort );
+        final EditText name_ = root.findViewById( R.id.detailsName );
+        final EditText ipadr_ = root.findViewById( R.id.detailsIpAdr );
+        final EditText port_ = root.findViewById( R.id.detailsPort );
 
         name_.setText( item.getName() );
         ipadr_.setText( item.getIp_adr() );
@@ -476,22 +469,14 @@ MessageChat mChat = new MessageChat(param1,i);
         builder.setView( root );
         builder.setMessage( "Редактировать запись" );
 
-        builder.setPositiveButton( "Сохранить", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int id) {
-                item.setName( name_.getText().toString() );
-                item.setIp_adr( ipadr_.getText().toString() );
-                item.setPort( port_.getText().toString() );
+        builder.setPositiveButton( "Сохранить", (dialog, id) -> {
+            item.setName( name_.getText().toString() );
+            item.setIp_adr( ipadr_.getText().toString() );
+            item.setPort( port_.getText().toString() );
 
-                DBManager.getInstance( getApplicationContext() ).updateContact( item );
-                refreshList();
-            }
-        } ).setNegativeButton( "Отмена", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int id) {
-                dialog.cancel();
-            }
-        } );
+            DBManager.getInstance( getApplicationContext() ).updateContact( item );
+            refreshTitleList();
+        }).setNegativeButton( "Отмена", (dialog, id) -> dialog.cancel());
 
         builder.setCancelable( false );
         builder.create();
@@ -499,38 +484,28 @@ MessageChat mChat = new MessageChat(param1,i);
     }
 
     public void openDeleteDialog(final TitleChatsItems item) {
-
-        LayoutInflater dlgInfater = (LayoutInflater) getSystemService( Context.LAYOUT_INFLATER_SERVICE );
-        View root = dlgInfater.inflate( R.layout.row_pod_menu, null );
+        LayoutInflater dlgInflater = (LayoutInflater) getSystemService( Context.LAYOUT_INFLATER_SERVICE );
+        dlgInflater.inflate( R.layout.row_pod_menu, null );
 
         AlertDialog.Builder builder = new AlertDialog.Builder( this );
-        //builder.setView( root );
         builder.setMessage( String.format( "Удалить контакт %s?", item.getName() ) );
 
-        builder.setPositiveButton( "Удалить", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int id) {
-                DBManager.getInstance( getApplicationContext() ).deleteContact( item.getID() );
-                refreshList();
-            }
-        } ).setNegativeButton( "Отмена", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int id) {
-                dialog.cancel();
-            }
-        } );
+        builder.setPositiveButton( "Удалить", (dialog, id) -> {
+            DBManager.getInstance( getApplicationContext() ).deleteContact( item.getID() );
+            refreshTitleList();
+        }).setNegativeButton( "Отмена", (dialog, id) -> dialog.cancel());
 
         builder.setCancelable( false );
         builder.create();
         builder.show();
     }
 
-    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+    protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
         super.onRestoreInstanceState( savedInstanceState );
         //Log.d(LOG_TAG, "onRestoreInstanceState");
     }
 
-    protected void onSaveInstanceState(Bundle outState) {
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState( outState );
         //Log.d(LOG_TAG, "onSaveInstanceState");
     }
@@ -542,6 +517,8 @@ MessageChat mChat = new MessageChat(param1,i);
         dialog.setIndeterminate( true );
         dialog.show();
     }
+
+
 
     private void ConnectToServer() {
             if(!connectToServer) {
@@ -570,14 +547,11 @@ MessageChat mChat = new MessageChat(param1,i);
         // TODO Auto-generated method stub
         final String theMessage = message;
         mMessage = message;
-        runOnUiThread(new Runnable() {
-                   @Override
-                   public void run() {
-                       //tost("onTCPMessageRecieved: "+theMessage);
-                       addChatMessage(theMessage);
-                       //chats.add(new MessageChat (theMessage));
-                   }
-               });
+        runOnUiThread(() -> {
+            //tost("onTCPMessageRecieved: "+theMessage);
+            addChatMessage(theMessage,IN_MSG);
+            //chats.add(new MessageChat (theMessage));
+        });
     }
 
     @Override
@@ -595,18 +569,14 @@ MessageChat mChat = new MessageChat(param1,i);
                             } while (count != index);
                         }
 
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                //tost("onTCPMessageRecieved: "+theMessage);
-               // addChatMessage(theMessage);
-                addChatMessage(String.valueOf(inMsg));
-                //chats.add(new MessageChat (theMessage));
-            }
+        runOnUiThread(() -> {
+            //tost("onTCPMessageRecieved: "+theMessage);
+           // addChatMessage(theMessage);
+            addChatMessage(String.valueOf(inMsg),IN_MSG);
+            //chats.add(new MessageChat (theMessage));
         });
                             inMsg.delete(0,count); // обнуляем буфер
-                            count = -1;// обнуляем счетчик
-        //inMsg.
+                            //count = -1;// обнуляем счетчик
     }
 
     public void onTCPMessageRecievedChar(final char messageChar){
@@ -619,19 +589,14 @@ MessageChat mChat = new MessageChat(param1,i);
             msg = " NACK\n";
         }
         if (!msg.equals("\n")){
-            msg2+=String.valueOf( messageChar );
+            msg2 = msg2 + messageChar;
         }
         else {
             msg = msg2;
         }
        final String theMessageChar = msg;
 
-        runOnUiThread(new Runnable() {
-                          @Override
-                          public void run() {
-                              addChatMessage(theMessageChar);;
-                          }
-        });
+        runOnUiThread(() -> addChatMessage(theMessageChar,IN_MSG));
     }
     public void onTCPMessageRecievedInt(final Integer messageInt) {
         final int theMessageInt = messageInt;
@@ -645,63 +610,62 @@ MessageChat mChat = new MessageChat(param1,i);
                 Message = (" OK");break;
             default:break;
         }
-        if (theMessageInt == -1){
+        /*if (theMessageInt == -1){
 
-        }
+        }*/
         final String msg = (Message);
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                addChatMessage(msg);
-        }});
+        runOnUiThread(() -> addChatMessage(msg,IN_MSG));
     }
 
     @Override
     public void onTCPConnectionStatusChanged(boolean isConnectedNow) {
         if(isConnectedNow)
+        //ConnectToTable();// создаём или добавляем таблицу в базу
         {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    dialog.hide();
-                    //tostShort("Connected to server");
-                    connectToServer = true;
-                    if(is_fragment_TcpIP == true){
-                        menu_switch_btn.setIcon(android.R.drawable.checkbox_on_background);
-                    }
+            runOnUiThread(() -> {
+                dialog.hide();
+                //tostShort("Connected to server");
+                connectToServer = true;
+
+                if(is_fragment_TcpIP == true){
+                    menu_switch_btn.setIcon(android.R.drawable.checkbox_on_background);
                 }
+
             });
         }
     }
 
-    public void TimePaused(long i){
+    /*TODO
+     * создаём или добавляем таблицу в базу
+     * */
+    public void ConnectToTable(){
+        DBChatHelper.setTableName(table_name);
+        db_chat_Adapter.createTableIfNotExists();
+    }
+
+    /*public void TimePaused(long i){
         Handler handler = new Handler();
         handler.postDelayed(new Runnable() {public void run() { }}, i);
-    }
+    }*/
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu){
      getMenuInflater().inflate( R.menu.menu_tcp_ip_client, menu );
+        menu_clearChat = menu.findItem(R.id.clearChat);
         menu_switch_btn = menu.findItem(R.id.action_Connect_Disconnect_TCP_IP);
      return true;
     }
+    @SuppressLint("NonConstantResourceId")
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()){
             case R.id.action_settings:
                 DisconnectToServer();
-                //fManager.beginTransaction().addToBackStack("fragment_blank").setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN).replace(R.id.FrLay,new BlankFragment() ).commit();
-
-                //replaceFragment(new BlankFragment(), "fragment_blank");
                 replaceFragment(new SharedPreferenceFragment(), "SharedPreferenceFragment");
-
-                //item.setChecked(!item.isChecked());
                 return true;
             case R.id.action_Connect_Disconnect_TCP_IP:
-                //item.setChecked(!item.isChecked());
                 if (connectToServer == true&&is_fragment_TcpIP == true){
                     DisconnectToServer();
-                    //item.setTitle( "Closed" );
                     item.setIcon(android.R.drawable.checkbox_off_background);
                 }
                else if (connectToServer == false&&is_fragment_TcpIP == true){
@@ -713,8 +677,10 @@ MessageChat mChat = new MessageChat(param1,i);
                     } else {tostShort( "Error" );}
                 }
                return true;
-            case R.id.xz:
-                item.setChecked(!item.isChecked());
+            case R.id.clearChat:
+                db_chat_Adapter.deleteMesagesAllChat();
+                db_chat_Adapter.createTableIfNotExists();
+                clearRecyclerView();
                 return true;
             default:
                break;
@@ -722,80 +688,6 @@ MessageChat mChat = new MessageChat(param1,i);
             return super.onOptionsItemSelected(item);
         }
 
-
-
-
 //=================================================================================
 
 }
-
-
-
-
- /*   public void initContacts() {
-        //list = new ArrayList<adapter_listview>();
-        list.add( new adapter_listview( "vedromeda", "gprs.so-ro.ru", "10003" ) );
-        list.add( new adapter_listview( "vragi", "abrakadabra.ru", "10103" ) );
-        //list.add( new adapter_listview( "neizvestno kto", "10.13.46.5", "2000" ) );
-    }*/
-
-/*  String txtName = name_.getText().toString();
-                x = (TextView) findViewById( R.id.textViewName );
-                x.setText( txtName );
-                String txtipadr = ipadr_.getText().toString();
-                y = (TextView) findViewById( R.id.textViewIpAdr );
-                y.setText( txtipadr );
-                String txtport = port_.getText().toString();
-                z = (TextView) findViewById( R.id.textViewPort );
-                z.setText( txtport );*/
-
- /* EditText textFragmentName = (EditText) findViewById( R.id.text_name );
-                name = textFragmentName.getText().toString();
-                textFragmentName.setText( "" );
-                EditText textFragmentIpAdr = (EditText) findViewById( R.id.text_ipadress );
-                ipadress = textFragmentIpAdr.getText().toString();
-                textFragmentIpAdr.setText( "" );
-                EditText textFragmentPort = (EditText) findViewById( R.id.text_port );
-                port = textFragmentPort.getText().toString();
-                textFragmentPort.setText( "" );
-                mnb = true;
-                fTrans.remove( frag2 );
-                fTrans.add( R.id.FrLay, frag1 );
-                fTrans.addToBackStack( null );
-                fTrans.commit();*/
-
-//FragmentManager fragmentManager = getFragmentManager();
-// Получаем ссылку на второй фрагмент по ID
-//Fragment fragtitl = (fragment_titles) fragmentManager.findFragmentById(R.id.textViewName);
-//fragtitl.setText("Access to Fragment 2 from Activity");
-
-                        /*Fragment fds = getFragmentManager().findFragmentById(R.id.text_port);
-                        ((TextView) fds.getView().findViewById(R.id.textViewName))
-                                .setText("Access to Fragment 2 from Activity");*/
-
-
-
-
-//ЭТО РАБОТАЕТ
-//выводит данные в текствиев активити (не фрагмента)
-                        /* textViewName = (TextView) findViewById(R.id.textViewName);
-                            textViewName.setText(name);
-                         textViewIpAdr = (TextView) findViewById(R.id.textViewIpAdr);
-                            textViewIpAdr.setText(ipadress);
-                         textViewPort = (TextView) findViewById(R.id.textViewPort);
-                        textViewPort.setText(port);*/
-
-
-
- /*  public void onClickSend(View v) {
-        varconnectserver = true;
-        fTrans.remove( frag1 );
-        fTrans.add( R.id.FrLay, frag2 );
-        fTrans.addToBackStack( null );
-        fTrans.commit();
-
-    }*/
- //fTrans = getFragmentManager().beginTransaction();
-//ListView LVMain = (ListView) findViewById(R.id.list_view);
-//ArrayAdapter<String> adapter1 = new ArrayAdapter<String>( this, android.R.layout.simple_list_item_1, day_of_weeks );
-//LVMain.setAdapter( adapter1 );

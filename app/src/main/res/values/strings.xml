@@ -66,6 +66,9 @@
     <string name="todo">TODO</string>
     <string name="soobsheniye">сообщение</string>
     <string name="_23_54">23:54</string>
+    <string name="isconnected">isConnected</string>
+    <string name="ClearChat">Очистить чат</string>
+    <string name="oProgramme">О программе</string>
 
     <!-- TODO: Remove or change this placeholder text -->
 

@@ -8,9 +8,21 @@
         android:checkable="true"
         android:checked="false"
         android:icon="@android:drawable/checkbox_off_background"
-
-        android:title="Open"
+        android:title="@string/isconnected"
         app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/clearChat"
+        android:icon="@android:drawable/ic_menu_share"
+        android:title="@string/ClearChat"
+        android:visible="false"
+        app:showAsAction="collapseActionView"
+        />
+    <item
+        android:id="@+id/oProgramme"
+        android:icon="@android:drawable/ic_menu_share"
+        android:title="@string/oProgramme"
+        app:showAsAction="collapseActionView"
+        />
     <item
         android:id="@+id/action_settings"
         android:checkable="false"

@@ -63,7 +63,7 @@ public class TCPCommunicator {
 			        out.write(  outMsg  );
 			        out.flush();
 					//Toast.makeText( appContext, i, Toast.LENGTH_LONG ).show();
-			        Log.d("TcpClient", "sent: " + outMsg);
+			        Log.d("TcpClientOutputMessage", "sent: " + outMsg);
 				}
 				catch(Exception e)
 				{
@@ -141,6 +141,7 @@ public class TCPCommunicator {
 						int index = 0;
 						if(count >= 0){
 							do {
+								//if(charBuffer[index] != '\n' && charBuffer[index] != 0x0D && charBuffer[index] < 32)
 								if((charBuffer[index])!='\n'&&(charBuffer[index])!=0x0D&&(charBuffer[index]>=0&&(charBuffer[index])<32))
 								{
 									inMsg.append(DecimalToHex.toHex(charBuffer[index]));
@@ -152,6 +153,7 @@ public class TCPCommunicator {
 								index++;
 							}while (count!=index);
 							for (TCPListener listener : allListeners) listener.onTCPMessageRecieved(String.valueOf((inMsg)));//
+							Log.d("TcpClientInputMessage", "sent: " + inMsg);
 							inMsg.delete(0,count); // обнуляем буфер
 							count = -1;// обнуляем счетчик
 					}
@@ -171,3 +173,5 @@ public class TCPCommunicator {
 		EventBus.getDefault().post( event );
 	}*/
 }
+//ConnectException
+//ErrnoException
