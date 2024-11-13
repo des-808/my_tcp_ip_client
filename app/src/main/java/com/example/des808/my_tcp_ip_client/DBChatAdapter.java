@@ -20,6 +20,18 @@ public class DBChatAdapter {
         dbChatHelper = new DBChatHelper(con.getApplicationContext());
     }
 
+    public void openConnection() {
+        if (db == null || !db.isOpen()) {
+            db = dbChatHelper.getWritableDatabase();
+        }
+    }
+
+    public void closeConnection() {
+        if (db != null && db.isOpen()) {
+            db.close();
+        }
+    }
+
     public DBChatAdapter openBd(){//открытие БД
         db = dbChatHelper.getWritableDatabase();
         return this;
@@ -30,19 +42,21 @@ public class DBChatAdapter {
     }
 
     public void createTableIfNotExists() {
-        openBd();
+        openConnection();
+        //openBd();
         db.execSQL("CREATE TABLE IF NOT EXISTS " + DBChatHelper.TABLE_NAME + " (" +
                 DBChatHelper.MESSAGE_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 DBChatHelper.MESSAGE_OUTGOING + " INTEGER, " +
                 DBChatHelper.MESSAGE_IN + " TEXT, " +
                 DBChatHelper.MESSAGE_TIME + " TEXT, " +
                 DBChatHelper.MESSAGE_OUT + " TEXT);");
-        closeBd();
+        //closeBd();
     }
 
     @SuppressLint("Range")
     public ArrayList<Chat> getMessages() {
-        openBd();
+        openConnection();
+        //openBd();
         ArrayList<Chat> messagesList = new ArrayList<>();
         String[] columns = new String[] {DBChatHelper.MESSAGE_ID,DBChatHelper.MESSAGE_OUTGOING, DBChatHelper.MESSAGE_IN, DBChatHelper.MESSAGE_TIME, DBChatHelper.MESSAGE_OUT};
         Cursor cursor = db.query(DBChatHelper.TABLE_NAME, columns, null, null, null, null, null);
@@ -65,20 +79,22 @@ public class DBChatAdapter {
                 }
             }
         cursor.close();
-        closeBd();
+        //closeBd();
         return messagesList;
     }
 
     public long getCount(){
-        openBd();
+        openConnection();
+        //openBd();
         long count = DatabaseUtils.queryNumEntries(db, DBChatHelper.TABLE_NAME);;
-        closeBd();
+        //closeBd();
         return count;
     }
 
     @SuppressLint("Range")
     public Chat getMessage(String TableName, long id){
-        openBd();
+        openConnection();
+        //openBd();
         Chat chat = null;
         String msg = "",time_msg = "";
         String query = String.format("SELECT * FROM %s WHERE %s=?",TableName, DBChatHelper._ID);
@@ -96,41 +112,46 @@ public class DBChatAdapter {
         }
 
         cursor.close();
-        closeBd();
+        //closeBd();
         return  chat;
     }
 
     // Добавление нового сообщения
     public long addDBMessage(Chat  msg_in) {
-        openBd();
+        openConnection();
+        //openBd();
         ContentValues values = new ContentValues();
         values.put(DBChatHelper.MESSAGE_OUTGOING, msg_in.getOutgoing());
         values.put(DBChatHelper.MESSAGE_IN, msg_in.getMessage_in());
         values.put(DBChatHelper.MESSAGE_TIME, msg_in.getMessage_time());
         values.put(DBChatHelper.MESSAGE_OUT, msg_in.getMessage_out());
         long res = db.insert(DBChatHelper.TABLE_NAME, null, values);
-        closeBd();
+        //closeBd();
         return res;
     }
 
     // Удаление сообщения
     public int deleteMessage(int id) {
-        openBd();
+        openConnection();
+        //openBd();
         String where = String.format("%s=%d", DBChatHelper._ID, id);
         int res = db.delete(DBChatHelper.TABLE_NAME, where, null);
-        closeBd();
+        //closeBd();
+
         return res;
     }
 
     public void deleteMesagesAllChat(){
-        openBd();
+        openConnection();
+        //openBd();
         db.execSQL("DROP TABLE IF EXISTS " + DBChatHelper.TABLE_NAME);
-        closeBd();
+        //closeBd();
     }
 
     // Редактирование сообщения
     public int updateMessage(int id, Chat msg_in) {;
-        openBd();
+        openConnection();
+        //openBd();
         ContentValues values = new ContentValues();
         values.put(DBChatHelper.MESSAGE_OUTGOING, msg_in.getOutgoing());
         values.put(DBChatHelper.MESSAGE_IN, msg_in.getMessage_in());
@@ -139,14 +160,15 @@ public class DBChatAdapter {
 
         String where = String.format("%s=%d", DBChatHelper._ID, id);
         int res = db.update(DBChatHelper.TABLE_NAME, values, where, null);
-        closeBd();
+       // closeBd();
         return res;
     }
 
 
 // Вывод списка чатов
     public List<String> getChats() {
-        openBd();
+        openConnection();
+        //openBd();
         List<String> tables = new ArrayList<>();
         Cursor cursor = db.rawQuery("SELECT name FROM sqlite_master WHERE type='table'", null);
         if (cursor != null) {
@@ -158,7 +180,7 @@ public class DBChatAdapter {
             } while (cursor.moveToNext());
             cursor.close();
         }
-        closeBd();
+        //closeBd();
         return tables;
     }
 

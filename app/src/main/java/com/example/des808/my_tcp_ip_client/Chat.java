@@ -4,16 +4,35 @@ public class Chat {
 
 
     private int id;
+    private int position;
     //private String table_name = "";
     private String message_in = "";
     private String message_time = "";
     private String message_out = "";
     private boolean outgoing; // true = outgoing, false = incoming
+    private boolean clicked=false;
 
     public Chat() {    }
 
     public Chat(boolean outgoing) {
         this.outgoing = outgoing;
+    }
+
+    public int getPosition() {
+        return position;
+    }
+    public boolean setClicked(boolean click){
+        if(click&&!clicked){clicked=true;}
+        this.clicked = click;
+        return clicked;
+    }
+
+    public void setPosition(int position) {
+        this.position = position;
+    }
+
+    public Chat(int position) {
+        this.position = position;
     }
 
     public int getId() {
@@ -82,6 +101,8 @@ public class Chat {
     }
     public boolean isOutgoing() {return outgoing;}
     public boolean getOutgoing() {return outgoing;}
+
+
 }
 
 

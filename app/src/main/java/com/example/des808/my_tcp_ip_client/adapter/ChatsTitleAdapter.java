@@ -12,15 +12,15 @@ import com.example.des808.my_tcp_ip_client.TitleChatsItems;
 
 import java.util.ArrayList;
 
-public class CustomAdapter extends BaseAdapter {
+public class ChatsTitleAdapter extends BaseAdapter {
     private LayoutInflater inflater;
     private static ArrayList<TitleChatsItems>data;
 
-    public CustomAdapter(Context context, ArrayList<TitleChatsItems>data){
+    public ChatsTitleAdapter(Context context, ArrayList<TitleChatsItems>data){
         inflater = (LayoutInflater)context.getSystemService( Context.LAYOUT_INFLATER_SERVICE );
         this.data = data;
     }
-    //public CustomAdapter(fragment_titles fragment_titles, ArrayList<adapter_listview> list) { }
+    //public ChatsTitleAdapter(fragment_titles fragment_titles, ArrayList<adapter_listview> list) { }
 
     @Override
     public int getCount(){ return data.size(); }

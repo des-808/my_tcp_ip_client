@@ -10,7 +10,6 @@ public class MessageTime {
     @SuppressLint("SimpleDateFormat")
     private static java.text.DateFormat dateFormat = new SimpleDateFormat(pattern);
 
-
     public static String getTime() {
         return time = dateFormat.format(new java.util.Date());
     }

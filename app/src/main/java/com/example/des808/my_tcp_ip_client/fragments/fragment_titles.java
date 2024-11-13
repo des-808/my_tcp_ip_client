@@ -17,7 +17,7 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import com.example.des808.my_tcp_ip_client.adapter.CustomAdapter;
+import com.example.des808.my_tcp_ip_client.adapter.ChatsTitleAdapter;
 import com.example.des808.my_tcp_ip_client.R;
 import com.example.des808.my_tcp_ip_client.TitleChatsItems;
 import com.example.des808.my_tcp_ip_client.interfaces.onListViewFragmentTitle;
@@ -34,7 +34,7 @@ public class fragment_titles extends Fragment
     public CharSequence message;
     public ListView newlist;
     private ArrayList<TitleChatsItems> list;
-    private CustomAdapter C_Adapter;
+    private ChatsTitleAdapter C_Adapter;
     private ListView listView;
     private AdapterView<?> arg0;
     private View arg1;

@@ -15,9 +15,6 @@ public class DBHelper extends SQLiteOpenHelper
     public static final String PORT = "port";
     private Context context;
 
-
-
-
     public DBHelper(Context context) {
         // конструктор суперкласса
         super(context, DB_CONTACTS, null, 1);

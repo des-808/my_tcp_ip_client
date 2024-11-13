@@ -11,19 +11,13 @@ public class TitleChatsItems {
         this.ipadr = ipadr;
         this.port =  port;
     }
-
     public TitleChatsItems() {}
-
     public String getName()  { return name; }
     public String getIp_adr() { return ipadr; }
     public String getPort()  { return port; }
     public int    getID()        { return ID; }
-
     public void setName(String val)   {name = val;}
     public void setIp_adr(String val)  {ipadr = val;}
     public void setPort(String val)   {port = val;}
-
     public void setID(int   val)         { ID = val; }
-
-
 }
