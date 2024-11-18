@@ -1,5 +1,6 @@
 package com.example.des808.my_tcp_ip_client;
 
+
 import static java.lang.Integer.parseInt;
 
 import android.annotation.SuppressLint;
@@ -63,7 +64,7 @@ public class my_tcp_ip_client extends AppCompatActivity
         onListViewFragmentTitle,
         onFragment_TCP_IP_Init,
         TCPListener,
-        OnSettingsFragment,
+        //OnSettingsFragment,
                 //fragment_TCP_IP.OnFragmentItemClickListenerSwitch,
                 fragment_TCP_IP.OnFragmentInteractionListener
 {
@@ -131,15 +132,15 @@ public class my_tcp_ip_client extends AppCompatActivity
 
 
     //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    @Override
+    /*@Override
     public void on_SettingsFragment(){
         //////////////////////////////////////////////////
-        /*SharedPreferences.Editor editor = sharedPreferencesMain.edit();
+        *//*SharedPreferences.Editor editor = sharedPreferencesMain.edit();
         editor.putString("key", "value");//Добавить параметр
         editor.remove("key");//удалить параметр
-        editor.apply();*/
+        editor.apply();*//*
         // Snackbar.make(sv, String.valueOf(sharedPreferencesMain.getBoolean(KEY_ANDROMEDA, false)), Snackbar.LENGTH_SHORT).show();
-    }
+    }*/
 
     @Override
     public void on_FragmentTCP_IP_Init() {
@@ -548,6 +549,7 @@ public class my_tcp_ip_client extends AppCompatActivity
         StringBuilder inMsg = new StringBuilder();
 						int index = 0;
 						if(count >= 0) {
+
                             do {
                                 //if ((inMsgCharBuffer[index]) != '\n' && (inMsgCharBuffer[index]) != 0x0D && (inMsgCharBuffer[index] >= 0 && (inMsgCharBuffer[index]) < 32)) {
                                 if ((inMsgCharBuffer[index]) != '\n' && (inMsgCharBuffer[index]) != 0x0D && (inMsgCharBuffer[index] > 0 && (inMsgCharBuffer[index]) < 32)) {
@@ -610,14 +612,12 @@ public class my_tcp_ip_client extends AppCompatActivity
             runOnUiThread(() -> {
                 dialog.hide();
                 connectToServer = true;
-                if(is_fragment_TcpIP == true){
+                if(is_fragment_TcpIP){
                     menu_switch_btn.setIcon(android.R.drawable.checkbox_on_background);
                 }
             });
         }
     }
-
-
 
     /*public void TimePaused(long i){
         Handler handler = new Handler();
@@ -663,7 +663,5 @@ public class my_tcp_ip_client extends AppCompatActivity
         }
             return super.onOptionsItemSelected(item);
         }
-
 //=================================================================================
-
 }

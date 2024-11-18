@@ -117,4 +117,17 @@ public class fragment_TCP_IP extends Fragment {
         newView.setLayoutParams(params);
         fragmentLayout.addView(newView);
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
 }

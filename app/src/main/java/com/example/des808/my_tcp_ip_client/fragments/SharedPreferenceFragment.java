@@ -7,10 +7,9 @@ import androidx.annotation.NonNull;
 import androidx.preference.PreferenceFragmentCompat;
 
 import com.example.des808.my_tcp_ip_client.R;
-import com.example.des808.my_tcp_ip_client.interfaces.OnSettingsFragment;
 
 public class SharedPreferenceFragment extends PreferenceFragmentCompat {
-    private OnSettingsFragment mFragmentSettings;
+    //private OnSettingsFragment mFragmentSettings;
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
         addPreferencesFromResource(R.xml.root_preferences);
@@ -19,12 +18,12 @@ public class SharedPreferenceFragment extends PreferenceFragmentCompat {
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
-        if (context instanceof OnSettingsFragment){
+        /*if (context instanceof OnSettingsFragment){
             mFragmentSettings = (OnSettingsFragment) context;
         }
         else {
             throw new RuntimeException( context + " must implement OnFragmentInteractionListener" );
-        }
+        }*/
     }
 
     @Override

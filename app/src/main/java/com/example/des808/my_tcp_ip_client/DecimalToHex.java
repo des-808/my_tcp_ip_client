@@ -1,6 +1,6 @@
 package com.example.des808.my_tcp_ip_client;
 
-public class DecimalToHex {
+public class DecimalToHex {//из int переводит в строку в hex формате
     public static String toHex(int decimal){
         int rem;
         String hex="";
