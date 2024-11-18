@@ -1,5 +1,6 @@
 package com.example.des808.my_tcp_ip_client;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Handler;
@@ -26,7 +27,6 @@ public class TCPCommunicator {
 	private static List<TCPListener> allListeners;
 	private static BufferedWriter out;
 	private static BufferedReader in;
-	public static boolean vedromeda_bool;
 	private static InputStream inSocketStream;
 	private static Socket s;
 	private static Handler UIHandler;
@@ -64,7 +64,7 @@ public class TCPCommunicator {
 			        out.write(  outMsg  );
 			        out.flush();
 					//Toast.makeText( appContext, i, Toast.LENGTH_LONG ).show();
-			        Log.d("TcpClient", "sent: " + outMsg);
+			        Log.d("TcpClientOutputMessage", "sent: " + outMsg);
 				}
 				catch(Exception e)
 				{
@@ -76,13 +76,11 @@ public class TCPCommunicator {
 					});
 				}
 			}
-
 		};
 		Thread thread = new Thread(runnable);
 		thread.start();
 		return TCPWriterErrors.OK;
 	}
-
 
 	public static void addListener(TCPListener listener)
 	{
@@ -106,17 +104,6 @@ public class TCPCommunicator {
 			e.printStackTrace();
 		}
 	}
-
-	public static void vedromedaBool(boolean x) {
-		if (x) {
-			vedromeda_bool = true;
-			//EventBusTransmitterInt(4);
-		} else {
-			vedromeda_bool = false;
-			//EventBusTransmitterInt(5);
-		}
-	}
-
 	public static String getServerHost() {
 		return serverHost;
 	}
@@ -130,63 +117,114 @@ public class TCPCommunicator {
 		TCPCommunicator.serverPort = serverPort;
 	}
 
-
-	public class InitTCPClientTask extends AsyncTask<Void, Void, Void>
+  /*  public class InitTCPClientTask extends AsyncTask<Void, Void, Void>
 	{
 		public InitTCPClientTask() { }
-
-		@Override
+		@SuppressLint("SuspiciousIndentation")
+        @Override
 		protected Void doInBackground(Void... params) {
 			try
 			{
-				   s = new Socket(getServerHost(), getServerPort());
+				  *//* s = new Socket(getServerHost(), getServerPort());
 		          in = new BufferedReader(new InputStreamReader(s.getInputStream()));
-		         out = new BufferedWriter(new OutputStreamWriter(s.getOutputStream()));
+				 out = new BufferedWriter(new OutputStreamWriter(s.getOutputStream()));*//*
 
+				Socket s = new Socket(getServerHost(), getServerPort());
+				InputStream in = s.getInputStream();
+				//OutputStream out = s.getOutputStream();
+
+				 StringBuilder inMsg = new StringBuilder();
+				final int length = 65535;
+				//char[] charBuffer = new char[length];
+				byte[] byteBuffer = new byte[length];
 		         for(TCPListener listener:allListeners) listener.onTCPConnectionStatusChanged(true);
-		        while(true)
-		        {
+				int count;// счетчик символов
+                while(true){
+					byte[] byteBuffer2 = new byte[length];
+                    count = in.read(byteBuffer, 0, length);
+					System.arraycopy(byteBuffer, 0, byteBuffer2, 0, count);
+					*//*ByteBuffer byteBuffer = ByteBuffer.allocate(charBuffer.length * 2);
+					for (char c : charBuffer) {byteBuffer.putChar(c);}
+					byteBuffer.flip();*//*
+                    if (count > 0) {
 
-		            if (vedromeda_bool){
-						int inMsgInt = in.read();
-						char inMsgChar = (char)inMsgInt;
-						Log.d("TcpClient", "received Int: " + inMsgInt);
-						if(inMsgInt != -1 )
-							/*for (TCPListener listener : allListeners)
-								listener.onTCPMessageRecievedInt( inMsgInt );*/
-							for (TCPListener listener : allListeners)
-								listener.onTCPMessageRecievedChar( inMsgChar );
-					}else{
-		        			String inMsg = in.readLine();
-						Log.d("TcpClient", "received String: " + inMsg);
-							if(inMsg!=null)
-							{
-								for(TCPListener listener:allListeners)
-									listener.onTCPMessageRecieved(inMsg);
-							}
-						}
-		        }
-			} catch (UnknownHostException e) {
-		        e.printStackTrace();
-			} catch (IOException e) {
-		        e.printStackTrace();
-		    }
-
+                        for (int index = 0; count != index; index++){
+							byte b = byteBuffer2[index];
+							byteBuffer2[index]=-1;
+							String hex = Integer.toHexString(b & 0xFF);
+							//char c = (char)b;
+							if(hex.length() == 1){hex = "0" + hex;}
+							if((count == index-1)){
+								inMsg.append(hex).append("\n");
+							}else{inMsg.append(hex).append(" ");}
+                        }
+                        for (TCPListener listener : allListeners)
+							listener.onTCPMessageRecieved(String.valueOf((inMsg)));
+							//listener.onTCPMessageRecievedCharBuffer(charBuffer,count,length);
+                        Log.d("TcpClientInputMessage", "sent: " + inMsg);
+                        inMsg.delete(0, count); // обнуляем буфер
+                        count = -1;// обнуляем счетчик
+                    }
+                }
+			}
+			catch (UnknownHostException e) 		{e.printStackTrace();}
+			catch (IOException e) 				{e.printStackTrace();}
+			catch (IndexOutOfBoundsException e)	{e.printStackTrace();}
 			return null;
-
 		}
-
 	}
+	public enum TCPWriterErrors{UnknownHostException,IOException,otherProblem,OK}*/
+
+//ConnectException
+//ErrnoException
+
+
+public class InitTCPClientTask extends AsyncTask<Void, Void, Void>
+{
+	public InitTCPClientTask() { }
+	@SuppressLint("SuspiciousIndentation")
+	@Override
+	protected Void doInBackground(Void... params) {
+		try
+		{
+			s = new Socket(getServerHost(), getServerPort());
+			in = new BufferedReader(new InputStreamReader(s.getInputStream()));
+			out = new BufferedWriter(new OutputStreamWriter(s.getOutputStream()));
+			StringBuilder inMsg = new StringBuilder();
+			final int length = 65535;
+			char[] charBuffer = new char[length];
+			for(TCPListener listener:allListeners) listener.onTCPConnectionStatusChanged(true);
+
+			do {
+				int count = in.read(charBuffer, 0, length);
+				int index = 0;
+				if (count >= 0) {
+					do {
+						/*//if(charBuffer[index] != '\n' && charBuffer[index] != 0x0D && charBuffer[index] < 32)
+						if ((charBuffer[index]) != '\n' && (charBuffer[index]) != 0x0D && (charBuffer[index] >= 0 && (charBuffer[index]) < 32)) {
+							inMsg.append(DecimalToHex.toHex(charBuffer[index]));
+						} else {*/
+							inMsg.append((charBuffer[index]));
+						/*}*/
+						index++;
+					} while (count != index);
+					for (TCPListener listener : allListeners)
+					{
+						listener.onTCPMessageRecieved(String.valueOf((inMsg)));//
+                    }
+					/*for (TCPListener listener : allListeners)
+						listener.onTCPMessageRecieved(new String(charBuffer, 0, count, StandardCharsets.UTF_8 ));*/
+					Log.d("TcpClientInputMessage", "sent: " + inMsg);
+					inMsg.delete(0, count); // обнуляем буфер
+					//count = -1;// обнуляем счетчик
+				}
+			} while (true);
+		}
+		catch (UnknownHostException e) 		{e.printStackTrace();}
+		catch (IOException e) 				{e.printStackTrace();}
+		catch (IndexOutOfBoundsException e)	{e.printStackTrace();}
+		return null;
+	}
+}
 	public enum TCPWriterErrors{UnknownHostException,IOException,otherProblem,OK}
-
-
-
-
-	/*public static void EventBusTransmitterInt(int idf){
-		message_event event = new message_event();
-		event.setMessage( idf );
-		EventBus.getDefault().post( event );
-
-	}*/
-
 }

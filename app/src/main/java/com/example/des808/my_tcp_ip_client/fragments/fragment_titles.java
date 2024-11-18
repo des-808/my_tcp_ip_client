@@ -10,38 +10,20 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import com.example.des808.my_tcp_ip_client.CustomAdapter;
 import com.example.des808.my_tcp_ip_client.R;
-import com.example.des808.my_tcp_ip_client.adapter_listview;
 import com.example.des808.my_tcp_ip_client.interfaces.onListViewFragmentTitle;
-
-import java.util.ArrayList;
 
 public class fragment_titles extends Fragment
 {
     private OnFragmentItemClickListener mClickCallback;
     private OnFragmentInteractionListener mListener;
-    public onListViewFragmentTitle ONListViewFragmentTitle;
-    public View v;
-    public Toast toast;
-    public CharSequence message;
-    public ListView newlist;
-    private ArrayList<adapter_listview> list;
-    private CustomAdapter C_Adapter;
-    private ListView listView;
-    private AdapterView<?> arg0;
-    private View arg1;
-    private int posit;
-    private long arg3;
-    public boolean mMuteSelection;
-    private static final String LOG_TAG = "LOG_TAG" ;
+    private onListViewFragmentTitle ONListViewFragmentTitle;
+    //private static final String LOG_TAG = "LOG_TAG" ;
     private Bundle savedInstanceState;
 
     public fragment_titles() {
@@ -83,16 +65,9 @@ public class fragment_titles extends Fragment
     //######################################################################################################
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        v = inflater.inflate( R.layout.fragment_title, container, false );
-        newlist = (ListView) v.findViewById(R.id.list);
-        newlist.setOnItemClickListener( new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
-                mClickCallback.onClickSelected( position );
-            }
-        } );
-
-
+        View v = inflater.inflate(R.layout.fragment_title, container, false);
+        ListView newlist = (ListView) v.findViewById(R.id.list);
+        newlist.setOnItemClickListener((arg0, arg1, position, arg3) -> mClickCallback.onClickSelected( position ));
         return v;
     }
     //######################################################################################################
@@ -118,7 +93,6 @@ public class fragment_titles extends Fragment
         if (context instanceof OnFragmentInteractionListener) {
             mListener = (OnFragmentInteractionListener) context;
         } else { throw new RuntimeException( context.toString() + " must implement OnFragmentInteractionListener" );}
-
     }
 
     @Override

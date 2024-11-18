@@ -34,7 +34,7 @@
             app:key="silent mode"
             app:defaultValue="false"
             app:title="Silent Mode"
-            app:summary="Mute all sounds from this appp"/>
+            app:summary="Mute all sounds from this app"/>
         <SwitchPreference
             app:key="custom_storage"
             app:defaultValue="false"
@@ -43,11 +43,22 @@
             app:title="Awesome Mode"
             app:summary="Enable the Awesome Mode feature"/>
         <SwitchPreference
+
+            app:key="xz2"
+            app:defaultValue="false"
+            app:switchTextOn="Yes"
+            app:switchTextOff="No"
+            app:title="xz"
+            app:summary="Enable "/>
+        <SwitchPreference
+            app:dependency="xz2"
             app:key="switch_andromeda"
             app:defaultValue="true"
             app:switchTextOn="Yes"
             app:switchTextOff="No"
-            app:title="Andromeda"
+            app:title="Выкл чат, Вкл Андромеда"
+            app:summaryOff="Режим чата"
+            app:summaryOn="Режим Hex"
             app:summary="Выкл чат, Вкл Андромеда"/>
 
     </PreferenceCategory>

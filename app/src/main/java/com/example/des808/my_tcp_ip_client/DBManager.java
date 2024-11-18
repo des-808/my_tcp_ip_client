@@ -12,6 +12,7 @@ public class DBManager {
     private static DBManager instance;
     public     String  SnameIndex, SipadrIndex, SportIndex;
     public      int     SidIndex;
+    Cursor cursor;
 
     public static  DBManager getInstance(Context context){
         if(instance == null){
@@ -36,17 +37,18 @@ public class DBManager {
     public void openBd(){db = dbHelper.getWritableDatabase();}
 
     //закрытие БД
-    public void closeBd(){db.close();}
+    public void closeBd(){db.close();
+        cursor.close();}
 
     //получение полного списка контактов
-    public ArrayList<adapter_listview>getAllContacts(){
+    public ArrayList<TitleChatsItems>getAllContacts(){
         openBd();
-        Cursor cursor = db.query( DBHelper.TABLE_NAME,null,null,null,null,null,null );
-        ArrayList<adapter_listview> list = new ArrayList<adapter_listview>(  );
+        cursor = db.query( DBHelper.TABLE_NAME,null,null,null,null,null,null );
+        ArrayList<TitleChatsItems> list = new ArrayList<TitleChatsItems>(  );
         if(cursor != null&& cursor.getCount()>0){
             cursor.moveToFirst();
             do{
-                adapter_listview item = new adapter_listview();
+                TitleChatsItems item = new TitleChatsItems();
                 item.setID( cursor.getInt( 0 ) );
                 item.setName( cursor.getString( 1 ) );
                 item.setIp_adr( cursor.getString( 2 ) );
@@ -60,7 +62,7 @@ public class DBManager {
     //получение одной строки контакта
     public HashMap<String, String> readContact(int position){
         openBd();
-        Cursor cursor = db.query( DBHelper.TABLE_NAME,null,null,null,null,null,null );
+        cursor = db.query( DBHelper.TABLE_NAME,null,null,null,null,null,null );
         if (cursor.moveToPosition( position )){
             //int idIndex =    cursor.getColumnIndex( DBHelper._ID );
             int nameIndex =  cursor.getColumnIndex( DBHelper.NAME );
@@ -80,7 +82,7 @@ public class DBManager {
     }
 
     //добавление нового контакта в список
-    public  int addContact(adapter_listview entity){
+    public  int addContact(TitleChatsItems entity){
         openBd();
         ContentValues values = new ContentValues( 3 );
         values.put( DBHelper.NAME, entity.getName() );
@@ -93,7 +95,7 @@ public class DBManager {
     }
 
     //обновление существующего контакта
-    public  int updateContact(adapter_listview entity){
+    public  int updateContact(TitleChatsItems entity){
         openBd();
         ContentValues values = new ContentValues( 3 );
         values.put( DBHelper.NAME, entity.getName() );

@@ -8,7 +8,7 @@
     android:background="@color/backGroundMyApp"
     android:orientation="vertical"
     tools:context=".fragments.fragment_titles"
-    tools:layout_editor_absoluteY="81dp">
+    >
 
     <TextView
         android:id="@+id/connect_text"
@@ -24,127 +24,124 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toTopOf="@+id/messages"
+        app:layout_constraintBottom_toTopOf="@+id/list_messages"
          />
 
-    <!--<androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/messages"
-        style="?attr/buttonBarStyle"
-        android:layout_width="match_parent"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/list_messages"
+        android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_weight="1"
-        android:clipToPadding="false"
-        android:paddingTop="@dimen/spacing_small"
-        android:paddingBottom="@dimen/spacing_small"
-        android:scrollbars="vertical"
-        app:layout_constraintBottom_toTopOf="@id/included"
+        android:background="@color/collorDark"
+        app:layout_constraintBottom_toTopOf="@id/containerFrameLayout"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/connect_text"/>-->
-
-
-<ScrollView
-android:id="@+id/messages"
-style="@style/Base.TextAppearance.AppCompat"
-android:layout_width="0dp"
-android:layout_height="0dp"
-android:layout_weight="10"
-android:background="@color/backGroundMyApp"
-android:clipToPadding="true"
-android:fillViewport="true"
-android:scrollbarStyle="insideOverlay"
-app:layout_constraintBottom_toTopOf="@id/included"
-app:layout_constraintEnd_toEndOf="parent"
-app:layout_constraintStart_toStartOf="parent"
-app:layout_constraintTop_toBottomOf="@id/connect_text">
-
-
-<!-- <androidx.recyclerview.widget.RecyclerView
-  android:id="@+id/chatRecyclerView"
-  android:layout_width="match_parent"
-  android:layout_height="0dp"
-  android:background="@android:color/background_dark"
-  android:layout_weight="1"
-  android:scrollbars="vertical"
-  android:visibility="visible">
-</androidx.recyclerview.widget.RecyclerView>-->
-<TextView
-    android:id="@+id/chatTextView"
+        app:layout_constraintTop_toBottomOf="@id/connect_text"
+        app:layout_constraintVertical_weight="10" />
+<FrameLayout
+    android:id="@+id/containerFrameLayout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@android:color/background_dark"
-    android:fadeScrollbars="true"
-    android:focusable="?android:attr/windowOverscan"
-    android:focusableInTouchMode="true"
-    android:inputType="none"
-    android:keepScreenOn="true"
-    android:saveEnabled="true"
-    android:scrollbars="vertical"
-    android:textColor="@color/colorPrimaryDark"
-    android:visibility="visible"
 
-    />
-</ScrollView>
+    app:layout_constraintVertical_weight="1.1"
+    app:layout_constraintHorizontal_weight="1.1"
+
+    app:layout_constraintTop_toBottomOf="@+id/list_messages"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintBottom_toBottomOf="parent">
     <include
-        android:id="@+id/included"
-        layout="@layout/row_andromeda_send"
+        android:id="@+id/fragmentLayout"
 
+        layout="@layout/row_andromeda_send"
+        android:visibility="visible"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@+id/messages"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
+
+
         />
+</FrameLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
 
-
-<!--
+<!--<include
+android:id="@+id/fragmentLayout"
+layout="@layout/row_chat_send"
 layout="@layout/row_andromeda_send"
+android:visibility="visible"
+android:layout_width="match_parent"
+android:layout_height="wrap_content"
 
+app:layout_constraintVertical_weight="1.1"
+app:layout_constraintHorizontal_weight="1.1"
 
-<ScrollView
-android:id="@+id/scroll"
-style="@style/Base.TextAppearance.AppCompat"
-android:layout_width="0dp"
-android:layout_height="0dp"
-android:layout_weight="10"
-android:background="@color/backGroundMyApp"
-android:clipToPadding="true"
-android:fillViewport="true"
-android:scrollbarStyle="insideOverlay"
-app:layout_constraintBottom_toTopOf="@id/included"
-app:layout_constraintEnd_toEndOf="parent"
+app:layout_constraintTop_toBottomOf="@+id/list_messages"
 app:layout_constraintStart_toStartOf="parent"
-app:layout_constraintTop_toBottomOf="@id/connect_text">
+app:layout_constraintEnd_toEndOf="parent"
+app:layout_constraintBottom_toBottomOf="parent"
+    />  -->
 
 
-&lt;!&ndash; <android.support.v7.widget.RecyclerView&ndash;&gt;
-&lt;!&ndash;  android:id="@+id/chatRecyclerView"&ndash;&gt;
-&lt;!&ndash; android:layout_width="match_parent"&ndash;&gt;
-&lt;!&ndash;android:layout_height="0dp"&ndash;&gt;
-&lt;!&ndash; android:layout_weight="1"&ndash;&gt;
-&lt;!&ndash; android:scrollbars="vertical"&ndash;&gt;
-&lt;!&ndash;android:visibility="visible">&ndash;&gt;
-&lt;!&ndash;</android.support.v7.widget.RecyclerView>&ndash;&gt;
+
+
+<!--    <?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+xmlns:android="http://schemas.android.com/apk/res/android"
+xmlns:tools="http://schemas.android.com/tools"
+android:layout_width="match_parent"
+android:layout_height="match_parent"
+xmlns:app="http://schemas.android.com/apk/res-auto"
+android:background="@color/backGroundMyApp"
+android:orientation="vertical"
+tools:context=".fragments.fragment_titles"
+    >
+
 <TextView
-    android:id="@+id/chatTextView"
+    android:id="@+id/connect_text"
+    android:layout_width="match_parent"
+    android:layout_height="20dp"
+    android:background="@android:color/background_dark"
+    android:textAlignment="textStart"
+    android:textAllCaps="false"
+    android:textAppearance="@style/TextAppearance.Compat.Notification.Title"
+    android:textColor="@color/colorPraimary"
+    android:textSize="14sp"
+    android:textStyle="bold|italic"
+    app:layout_constraintTop_toTopOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintBottom_toTopOf="@+id/list_messages"
+    />
+
+<androidx.recyclerview.widget.RecyclerView
+    android:id="@+id/list_messages"
+    android:layout_width="0dp"
+    android:layout_height="0dp"
+    android:background="@color/collorDark"
+    app:layout_constraintBottom_toTopOf="@id/fragmentLayout"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintHorizontal_bias="0.0"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toBottomOf="@id/connect_text"
+    app:layout_constraintVertical_weight="10" />
+
+<include
+    android:id="@+id/fragmentLayout"
+
+    layout="@layout/row_andromeda_send"
+    android:visibility="visible"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@android:color/background_dark"
-    android:fadeScrollbars="true"
-    android:focusable="?android:attr/windowOverscan"
-    android:focusableInTouchMode="true"
-    android:inputType="none"
-    android:keepScreenOn="true"
-    android:saveEnabled="true"
-    android:scrollbars="vertical"
-    android:textColor="@color/colorPrimaryDark"
-    android:visibility="visible"
 
+    app:layout_constraintVertical_weight="1.1"
+    app:layout_constraintHorizontal_weight="1.1"
+
+    app:layout_constraintTop_toBottomOf="@+id/list_messages"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintBottom_toBottomOf="parent"
     />
-</ScrollView>-->
 
+</androidx.constraintlayout.widget.ConstraintLayout>-->
 
 
 

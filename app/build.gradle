@@ -1,7 +1,7 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdk 34
+    compileSdk 35
     defaultConfig {
         applicationId "com.example.des808.my_tcp_ip_client"
         minSdk 26
@@ -18,36 +18,31 @@ android {
     }
     namespace 'com.example.des808.my_tcp_ip_client'
     buildFeatures {
-        viewBinding false
+        viewBinding true
     }
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_11
-        targetCompatibility JavaVersion.VERSION_11
+        sourceCompatibility JavaVersion.VERSION_23
+        targetCompatibility JavaVersion.VERSION_23
     }
 }
 
+repositories {
+    maven {
+        url 'https://jitpack.io'
+    }
+}
+
+
+
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
-    /*implementation 'com.android.support:support-fragment:28.0.0'
-    implementation 'com.android.support.constraint:constraint-layout:2.0.4'
-    implementation 'com.android.support:appcompat-v7:28.0.0'
-    implementation 'com.android.support:support-annotations:28.0.0'
-implementation 'android.arch.lifecycle:livedata:1.1.1'
-implementation 'android.arch.lifecycle:viewmodel:1.1.1'
-androidTestImplementation 'com.android.support.test:runner:1.0.2'
-androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
-implementation 'com.android.support:support-v4:28.0.0'
-implementation 'com.android.support:recyclerview-v7:28.0.0'
-implementation 'com.android.support:design:28.0.0'
-    */
-
     implementation 'androidx.appcompat:appcompat:1.7.0'
-    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
-    implementation 'androidx.fragment:fragment:1.8.3'
-    implementation 'androidx.annotation:annotation:1.8.2'
-    implementation 'androidx.lifecycle:lifecycle-livedata:2.8.6'
-    implementation 'androidx.lifecycle:lifecycle-viewmodel:2.8.6'
+    implementation 'androidx.constraintlayout:constraintlayout:2.2.0'
+    implementation 'androidx.fragment:fragment:1.8.5'
+    implementation 'androidx.annotation:annotation:1.9.1'
+    implementation 'androidx.lifecycle:lifecycle-livedata:2.8.7'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel:2.8.7'
     implementation 'androidx.preference:preference:1.2.1'
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test:runner:1.6.2'
@@ -58,3 +53,6 @@ implementation 'com.android.support:design:28.0.0'
     implementation 'com.google.android.material:material:1.12.0'
 
 }
+/*
+    implementation 'org.nmela:nmea4j:1.0.0'
+*/
