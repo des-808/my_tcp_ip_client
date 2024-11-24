@@ -1,6 +1,5 @@
 package com.example.des808.my_tcp_ip_client.fragments;
 
-
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.os.Bundle;
@@ -10,7 +9,6 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 
 import com.example.des808.my_tcp_ip_client.my_tcp_ip_client;
-
 
 @SuppressLint("ValidFragment")
 public class fragment_exit extends DialogFragment {
@@ -25,8 +23,8 @@ public class fragment_exit extends DialogFragment {
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        String title = getArguments().getString( "title" );
-        AlertDialog.Builder builder=new AlertDialog.Builder(getActivity());
+        String title = getArguments() != null ? getArguments().getString("title") : null;
+        AlertDialog.Builder builder=new AlertDialog.Builder(getActivity() != null ? getActivity() : null );
         builder.setIcon(android.R.drawable.ic_dialog_alert);
         return builder.setTitle(title).setPositiveButton( "OK", (dialog, whichButton) -> {
             ((my_tcp_ip_client) getActivity()).doPositiveClick();
@@ -34,8 +32,6 @@ public class fragment_exit extends DialogFragment {
                 .setNegativeButton( "Cancel", (dialog, whichButton) -> {
                     ((my_tcp_ip_client) getActivity()).doNegativeClick();
                 }).create();
-
-
 
         /*return new AlertDialog.Builder( getActivity() )
                 //.setIcon( R.drawable.android3d)

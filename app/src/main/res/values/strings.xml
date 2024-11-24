@@ -69,6 +69,8 @@
     <string name="isconnected">isConnected</string>
     <string name="ClearChat">Очистить чат</string>
     <string name="oProgramme">О программе</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
 
     <!-- TODO: Remove or change this placeholder text -->
 

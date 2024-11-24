@@ -7,6 +7,7 @@ import android.os.Handler;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.example.des808.my_tcp_ip_client.classs.DecimalToHex;
 import com.example.des808.my_tcp_ip_client.interfaces.TCPListener;
 
 import java.io.BufferedReader;
@@ -47,7 +48,7 @@ public class TCPCommunicator {
 	{
 		setServerHost(host);
 		setServerPort(port);
-		InitTCPClientTask task = new InitTCPClientTask();
+		InitTCPClientTask task = createInitTCPClientTask();
 		task.execute(new Void[0]);
 		return TCPWriterErrors.OK;
 	}
@@ -95,9 +96,9 @@ public class TCPCommunicator {
 	{
 		try
 		{
-			s.close();
-			in.close();
-			out.close();
+			if (s!=null)s.close();
+			if (in!=null)in.close();
+			if (out!=null)out.close();
 		}
 		catch(Exception e)
 		{
@@ -116,6 +117,10 @@ public class TCPCommunicator {
 	public static void setServerPort(int serverPort) {
 		TCPCommunicator.serverPort = serverPort;
 	}
+
+    public InitTCPClientTask createInitTCPClientTask() {
+        return new InitTCPClientTask();
+    }
 
   /*  public class InitTCPClientTask extends AsyncTask<Void, Void, Void>
 	{
@@ -181,7 +186,7 @@ public class TCPCommunicator {
 
 public class InitTCPClientTask extends AsyncTask<Void, Void, Void>
 {
-	public InitTCPClientTask() { }
+	private InitTCPClientTask() { }
 	@SuppressLint("SuspiciousIndentation")
 	@Override
 	protected Void doInBackground(Void... params) {
@@ -200,12 +205,12 @@ public class InitTCPClientTask extends AsyncTask<Void, Void, Void>
 				int index = 0;
 				if (count >= 0) {
 					do {
-						/*//if(charBuffer[index] != '\n' && charBuffer[index] != 0x0D && charBuffer[index] < 32)
-						if ((charBuffer[index]) != '\n' && (charBuffer[index]) != 0x0D && (charBuffer[index] >= 0 && (charBuffer[index]) < 32)) {
+						if(charBuffer[index] != '\n' && charBuffer[index] != 0x0D && charBuffer[index] < 32){
+						//if ((charBuffer[index]) != '\n' && (charBuffer[index]) != 0x0D && (charBuffer[index] >= 0 && (charBuffer[index]) < 32)) {
 							inMsg.append(DecimalToHex.toHex(charBuffer[index]));
-						} else {*/
+						} else {
 							inMsg.append((charBuffer[index]));
-						/*}*/
+						}
 						index++;
 					} while (count != index);
 					for (TCPListener listener : allListeners)

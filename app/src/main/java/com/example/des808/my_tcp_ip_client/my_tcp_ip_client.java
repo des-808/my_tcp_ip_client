@@ -4,8 +4,6 @@ package com.example.des808.my_tcp_ip_client;
 import static java.lang.Integer.parseInt;
 
 import android.annotation.SuppressLint;
-import android.app.ActionBar;
-import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -13,15 +11,10 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Vibrator;
-import android.preference.PreferenceManager;
 import android.util.Log;
-import android.view.ContextMenu;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
@@ -33,22 +26,28 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.des808.my_tcp_ip_client.adapter.ChatMessageAdapter;
 import com.example.des808.my_tcp_ip_client.adapter.ChatsTitleAdapter;
+import com.example.des808.my_tcp_ip_client.classs.Adress;
+import com.example.des808.my_tcp_ip_client.classs.Chat;
+import com.example.des808.my_tcp_ip_client.classs.DecimalToHex;
+import com.example.des808.my_tcp_ip_client.classs.MessageTime;
+import com.example.des808.my_tcp_ip_client.classs.TitleChatsItems;
+import com.example.des808.my_tcp_ip_client.db.DBChatAdapter;
 import com.example.des808.my_tcp_ip_client.fragments.SharedPreferenceFragment;
 import com.example.des808.my_tcp_ip_client.fragments.fragment_TCP_IP;
 import com.example.des808.my_tcp_ip_client.fragments.fragment_exit;
 import com.example.des808.my_tcp_ip_client.fragments.fragment_titles;
-import com.example.des808.my_tcp_ip_client.interfaces.OnSettingsFragment;
+import com.example.des808.my_tcp_ip_client.interfaces.EnumsAndStatics;
 import com.example.des808.my_tcp_ip_client.interfaces.TCPListener;
 import com.example.des808.my_tcp_ip_client.interfaces.onFragment_TCP_IP_Init;
-import com.example.des808.my_tcp_ip_client.interfaces.onListViewFragmentTitle;
+import com.example.des808.my_tcp_ip_client.interfaces.onStartFragmentTcpIp;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
@@ -59,9 +58,10 @@ import java.util.Objects;
 
 
 public class my_tcp_ip_client extends AppCompatActivity
-    implements  fragment_titles.OnFragmentInteractionListener,
-                fragment_titles.OnFragmentItemClickListener,
-        onListViewFragmentTitle,
+    implements  //fragment_titles.OnFragmentInteractionListener,
+                //fragment_titles.OnFragmentItemClickListener,
+        onStartFragmentTcpIp,
+        //onListViewFragmentTitle,
         onFragment_TCP_IP_Init,
         TCPListener,
         //OnSettingsFragment,
@@ -76,20 +76,18 @@ public class my_tcp_ip_client extends AppCompatActivity
     private final boolean OUT_MSG = true;
     final int MENU_RENAME = 1;
     final int MENU_DELETE = 2;
-   // final int MENU_CANCEL = 3;
+    //final int MENU_CANCEL = 3;
     final int ACK = 6;
     final int NACK = 21;
     final int SUCCESSFULLY = 0x14;
-    public boolean vedromeda_bool;
     public boolean connectToServer = false;
     public String mMessage;
     public Toast toast;
-    public String table_name, param2, param3;
+    public String table_name, ipAdr, port;
     public TitleChatsItems items;
     ListView LVMain;
 
-    public ActionBar actionBar;
-    private ProgressDialog dialog;
+    //public ActionBar actionBar;
     private final Handler UIHandler = new Handler();
     public MenuItem menu_switch_btn;
     public MenuItem menu_clearChat;
@@ -104,12 +102,12 @@ public class my_tcp_ip_client extends AppCompatActivity
     FragmentManager fManager;
     View sv;
 
-    private static final String PREFS_FILE = "com.example.des808.my_tcp_ip_client_preferences";
-    private static final String KEY_ANDROMEDA = "switch_andromeda";
-    private static final int PREFS_MODE = Context.MODE_PRIVATE;//Context.MODE_PRIVATE;
+    //private static final String PREFS_FILE = "com.example.des808.my_tcp_ip_client_preferences";
+    //private static final String KEY_ANDROMEDA = "switch_andromeda";
+    //private static final int PREFS_MODE = Context.MODE_PRIVATE;//Context.MODE_PRIVATE;
 
-    SharedPreferences sharedPreferencesMain;
-    SharedPreferences.Editor prefEditor;
+    //SharedPreferences sharedPreferencesMain;
+    //SharedPreferences.Editor prefEditor;
 
     List<Chat> chatsList = new ArrayList<>();
     RecyclerView recyclerView;//создаем переменную для отображения сообщений
@@ -117,36 +115,19 @@ public class my_tcp_ip_client extends AppCompatActivity
 
     DBChatAdapter db_chat_Adapter; //создаем переменную для работы с базой данных
     ChatMessageAdapter chatMessageAdapter;//создаем переменную для работы с clickable
+    private ProgressDialog dialog;
 
     public  boolean isHaveVibrate(){//Проверка наличия вибрации
         return vibrator.hasVibrator();//если нет вибрации то возвращаем false
     }
 
-    @Override
-    public void on_ListViewFragmentTitleInit() {
-        //сработает когда запустится фрагмент fragment_title
-        refreshTitleList();//перезагружает список
-        final ListView newlist = findViewById( R.id.list );//fragment_title
-        registerForContextMenu( newlist ); //если  раньше запускать будет ошибка. фрагменты не мгновенно запускаются
-    }
-
-
     //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    /*@Override
-    public void on_SettingsFragment(){
-        //////////////////////////////////////////////////
-        *//*SharedPreferences.Editor editor = sharedPreferencesMain.edit();
-        editor.putString("key", "value");//Добавить параметр
-        editor.remove("key");//удалить параметр
-        editor.apply();*//*
-        // Snackbar.make(sv, String.valueOf(sharedPreferencesMain.getBoolean(KEY_ANDROMEDA, false)), Snackbar.LENGTH_SHORT).show();
-    }*/
 
     @Override
     public void on_FragmentTCP_IP_Init() {
         //сработает когда запустится фрагмент fragment_tcp_ip
         is_fragment_TcpIP = true; //флаг наличия запущенного фрагмента
-        String xparam = table_name +"  |  "+param2 + ":" + param3;
+        String xparam = table_name +"  |  "+ ipAdr + ":" + port;
         TextView x = findViewById( R.id.connect_text );
         x.setText( xparam );
             object = findViewById(R.id.editObjekt);
@@ -167,7 +148,8 @@ public class my_tcp_ip_client extends AppCompatActivity
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(chatMessageAdapter);// устанавливаем для списка адаптер
     }
-    /*TODO
+
+/*TODO
     *  String i - текст сообщения
     *  boolean in_out - true - исходящие сообщения output = true
     *  boolean in_out - false - входящие сообщения input = false
@@ -196,25 +178,37 @@ public class my_tcp_ip_client extends AppCompatActivity
         chatsList.clear();
         Objects.requireNonNull(recyclerView.getAdapter()).notifyDataSetChanged();
     }
-    @Override
+
+   @Override
     public void on_FragmentTCP_IP_Disconnect(){
         is_fragment_TcpIP = false;//флаг отсутствия запущенного фрагмента
         menu_clearChat.setVisible(false);//скрываем кнопку удаления чата
         DisconnectToServer();
     }
 
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate( savedInstanceState );
         setContentView( R.layout.activity_my_tcp_ip_client );
         vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-        actionBar = this.getActionBar();
+        //actionBar = this.getActionBar();
         fragTitles = new fragment_titles();
         fragTCP_IP = new fragment_TCP_IP();
         sv = findViewById(R.id.FrLay);
+
         ////////////////////////////////////////////////////////////////////////////////////////////////////
-        sharedPreferencesMain = getSharedPreferences(PREFS_FILE, PREFS_MODE);
+        //sharedPreferencesMain = getSharedPreferences(PREFS_FILE, PREFS_MODE);
         ////////////////////////////////////////////////////////////////////////////////////////////////////
+       // toolbar = findViewById(R.id.toolbar);
+        //setSupportActionBar(toolbar);
+
+        /*toogle = new ActionBarDrawerToggle(this,drawerLayout,R.string.navigation_drawer_open,R.string.navigation_drawer_close);
+        drawerLayout.addDrawerListener(toogle);
+        toogle.syncState();
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);*/
+        ////////////////////////////////////////////////////////////////////////////////////////////////////
+        //создаем переменную для работы с базой данных
         ////////////////////////////////////////////////////////////////////////////////////////////////////
         db_chat_Adapter = new DBChatAdapter(this);
         chatMessageAdapter = new ChatMessageAdapter( chatsList);
@@ -247,8 +241,7 @@ public class my_tcp_ip_client extends AppCompatActivity
     }
 
     @Override
-    protected void onResume() {super.onResume();
-    }
+    protected void onResume() {super.onResume();}
 
     @Override
     protected void onStart() {super.onStart();}
@@ -292,37 +285,18 @@ public class my_tcp_ip_client extends AppCompatActivity
     @Override
     protected void onPause() {
         super.onPause();
-      //boolean is_andromeda = mPreferences.getAndromeda();
-      //prefEditor = settings.edit();
-      //prefEditor.putBoolean( String.valueOf(PREFS_ANDROMEDA), is_andromeda ); //перезаписываем настройки
-      //prefEditor.commit(); //сохраняем настройки
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        //settings.unregisterOnSharedPreferenceChangeListener(mOnSharedPreferenceChangeListener);
         //EventBus.getDefault().unregister( this );
-        //Log.d(LOG_TAG, "onDestroy");
         try {
             DisconnectToServer();
-            DisconnectToServer();
+            //DisconnectToServer();
         }catch (Exception e) {
             Log.d(LOG_TAG, String.valueOf(e));
         }
-    }
-
-    public void onClickBtnAdd(View v) {
-        //создаём аллерт диалог нового подключения
-        openAddDialog();
-    }
-
-    private void refreshTitleList() {
-       ArrayList<TitleChatsItems> list = DBManager.getInstance( this ).getAllContacts();
-        //list = DBManager.getInstance( this ).getAllContacts();
-        C_Adapter = new ChatsTitleAdapter( this, list );
-        LVMain = findViewById( R.id.list );
-        LVMain.setAdapter( C_Adapter );
     }
 
     //###################################################################################################*/
@@ -336,24 +310,11 @@ public class my_tcp_ip_client extends AppCompatActivity
     }
     //###################################################################################################
 
-    @Override
-    public void onClickSelected(int position) {
-        items = C_Adapter.getItem( position );
-        //DBManager.getInstance( getApplicationContext() ).getAllContacts(items);
-        HashMap<String, String> values = (DBManager.getInstance( getApplicationContext() ).readContact( position ));
-        table_name = values.get( "param1" );
-        param2 = values.get( "param2" );
-        param3 = values.get( "param3" );
-        //Log.d(LOG_TAG, String.valueOf( xparam ) );
-        ConnectToTable();// создаём или добавляем таблицу в базу
-        onStartFragmentTCP_IP();
-    }
-    /*TODO
-     * создаём или добавляем таблицу в базу
-     * */
-    public void ConnectToTable(){
-        DBChatHelper.setTableName(table_name);
-        db_chat_Adapter.createTableIfNotExists();
+    public void on_startFragmentTcpIp(Adress adr){
+        table_name=adr.getName();
+        ipAdr=adr.getIp();
+        port=adr.getPort();
+        replaceFragment(new fragment_TCP_IP(), "fragment_TCP_IP");
     }
     public void onStartFragmentTCP_IP() {
         replaceFragment(new fragment_TCP_IP(), "fragment_TCP_IP");
@@ -397,102 +358,7 @@ public class my_tcp_ip_client extends AppCompatActivity
             }
     }
 
-    @Override
-    public boolean onContextItemSelected(@NonNull MenuItem item) {
-        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
-        int position = info != null ? info.position : 0;
-        items = C_Adapter.getItem( position );
-        switch (item.getItemId()) {
-            case MENU_RENAME:
-                openRemoveDialog( items );
-                break;
-            case MENU_DELETE:
-                openDeleteDialog( items );
-                break;
-                //case MENU_CANCEL:break;
-            default:
-                break;
-        }
-        return super.onContextItemSelected( item );//false;//
-    }
-    @Override
-    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
-        super.onCreateContextMenu( menu, v, menuInfo );
-        menu.add( 0, MENU_RENAME, 0, "Редактировать" );
-        menu.add( 0, MENU_DELETE, 0, "Удалить" );
-        //menu.add( 0, MENU_CANCEL, 0, "Отмена" );
-    }
 
-    public void openAddDialog() {
-        LayoutInflater dlgInfater = (LayoutInflater) getSystemService( Context.LAYOUT_INFLATER_SERVICE );
-        View root = dlgInfater.inflate( R.layout.row_pod_menu, null );
-        final EditText name_ =  root.findViewById( R.id.detailsName );
-        final EditText ipadr_ = root.findViewById( R.id.detailsIpAdr );
-        final EditText port_ =  root.findViewById( R.id.detailsPort );
-
-        final AlertDialog.Builder builder = new AlertDialog.Builder( this );
-        builder.setView( root );
-        builder.setMessage( "Добавить запись" );
-
-        builder.setPositiveButton( "Сохранить", (dialog, id) -> {
-            TitleChatsItems item = new TitleChatsItems(
-                    name_.getText().toString(),
-                    ipadr_.getText().toString(),
-                    port_.getText().toString() );
-            DBManager.getInstance( getApplicationContext() ).addContact( item );
-            //list.add( item );
-            refreshTitleList();
-        }).setNegativeButton( "Отмена", (dialog, id) -> dialog.cancel());
-        builder.setCancelable( false );
-        builder.create();
-        builder.show();
-    }
-
-    public void openRemoveDialog(final TitleChatsItems item) {
-        LayoutInflater dlgInfater = (LayoutInflater) getSystemService( Context.LAYOUT_INFLATER_SERVICE );
-        View root = dlgInfater.inflate( R.layout.row_pod_menu, null );
-        final EditText name_ = root.findViewById( R.id.detailsName );
-        final EditText ipadr_ = root.findViewById( R.id.detailsIpAdr );
-        final EditText port_ = root.findViewById( R.id.detailsPort );
-
-        name_.setText( item.getName() );
-        ipadr_.setText( item.getIp_adr() );
-        port_.setText( item.getPort() );
-
-        AlertDialog.Builder builder = new AlertDialog.Builder( this );
-        builder.setView( root );
-        builder.setMessage( "Редактировать запись" );
-
-        builder.setPositiveButton( "Сохранить", (dialog, id) -> {
-            item.setName( name_.getText().toString() );
-            item.setIp_adr( ipadr_.getText().toString() );
-            item.setPort( port_.getText().toString() );
-
-            DBManager.getInstance( getApplicationContext() ).updateContact( item );
-            refreshTitleList();
-        }).setNegativeButton( "Отмена", (dialog, id) -> dialog.cancel());
-
-        builder.setCancelable( false );
-        builder.create();
-        builder.show();
-    }
-
-    public void openDeleteDialog(final TitleChatsItems item) {
-        LayoutInflater dlgInflater = (LayoutInflater) getSystemService( Context.LAYOUT_INFLATER_SERVICE );
-        dlgInflater.inflate( R.layout.row_pod_menu, null );
-
-        AlertDialog.Builder builder = new AlertDialog.Builder( this );
-        builder.setMessage( String.format( "Удалить контакт %s?", item.getName() ) );
-
-        builder.setPositiveButton( "Удалить", (dialog, id) -> {
-            DBManager.getInstance( getApplicationContext() ).deleteContact( item.getID() );
-            refreshTitleList();
-        }).setNegativeButton( "Отмена", (dialog, id) -> dialog.cancel());
-
-        builder.setCancelable( false );
-        builder.create();
-        builder.show();
-    }
 
     protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
         super.onRestoreInstanceState( savedInstanceState );
@@ -519,17 +385,18 @@ public class my_tcp_ip_client extends AppCompatActivity
                 TCPCommunicator.addListener( this );
                 SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences( this );
                 //DataStore settings = PreferenceManager.getDefaultSharedPreferences( this );
-                    tcpClient.init( settings.getString( EnumsAndStatics.SERVER_IP_PREF, param2 ),
-                            parseInt( settings.getString( EnumsAndStatics.SERVER_PORT_PREF, param3 ) ) );
+                    tcpClient.init( settings.getString( EnumsAndStatics.SERVER_IP_PREF, ipAdr),
+                            parseInt( settings.getString( EnumsAndStatics.SERVER_PORT_PREF, port) ) );
             }
     }
 
     private void DisconnectToServer(){
         if(TCPCommunicator.getInstance()!= null){
             TCPCommunicator.closeStreams();
+
             TCPCommunicator.removeAllListeners();
             connectToServer = false;
-            menu_switch_btn.setIcon(android.R.drawable.checkbox_off_background);
+            menu_switch_btn.setIcon(R.drawable.ic_otkl);
         }
     }
 
@@ -598,9 +465,9 @@ public class my_tcp_ip_client extends AppCompatActivity
                 Message = (" OK");break;
             default:break;
         }
-        /*if (theMessageInt == -1){
+        if (theMessageInt == -1){
 
-        }*/
+        }
         final String msg = (Message);
         runOnUiThread(() -> addChatMessage(msg,IN_MSG));
     }
@@ -613,7 +480,7 @@ public class my_tcp_ip_client extends AppCompatActivity
                 dialog.hide();
                 connectToServer = true;
                 if(is_fragment_TcpIP){
-                    menu_switch_btn.setIcon(android.R.drawable.checkbox_on_background);
+                    menu_switch_btn.setIcon(R.drawable.ic_podkl);
                 }
             });
         }
@@ -642,13 +509,14 @@ public class my_tcp_ip_client extends AppCompatActivity
             case R.id.action_Connect_Disconnect_TCP_IP:
                 if (connectToServer == true&&is_fragment_TcpIP == true){
                     DisconnectToServer();
-                    item.setIcon(android.R.drawable.checkbox_off_background);
+                    //item.setIcon(android.R.drawable.checkbox_off_background);
+                    item.setIcon(R.drawable.ic_otkl);
                 }
                else if (connectToServer == false&&is_fragment_TcpIP == true){
                     ConnectToServer();
                 }
                else if (connectToServer == false&&is_fragment_TcpIP == false){
-                    if(param2!= null||param3!= null) {
+                    if(ipAdr != null|| port != null) {
                         onStartFragmentTCP_IP();
                     } else {tostShort( "Error" );}
                 }

@@ -1,4 +1,4 @@
-package com.example.des808.my_tcp_ip_client;
+package com.example.des808.my_tcp_ip_client.classs;
 
 public class DecimalToHex {//из int переводит в строку в hex формате
     public static String toHex(int decimal){

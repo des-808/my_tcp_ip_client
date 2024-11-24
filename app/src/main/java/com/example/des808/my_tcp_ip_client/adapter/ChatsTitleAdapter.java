@@ -8,7 +8,7 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import com.example.des808.my_tcp_ip_client.R;
-import com.example.des808.my_tcp_ip_client.TitleChatsItems;
+import com.example.des808.my_tcp_ip_client.classs.TitleChatsItems;
 
 import java.util.ArrayList;
 

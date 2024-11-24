@@ -7,7 +7,7 @@
         android:id="@+id/action_Connect_Disconnect_TCP_IP"
         android:checkable="true"
         android:checked="false"
-        android:icon="@android:drawable/checkbox_off_background"
+        android:icon="@drawable/ic_otkl"
         android:title="@string/isconnected"
         app:showAsAction="ifRoom" />
     <item

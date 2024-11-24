@@ -1,19 +1,32 @@
 package com.example.des808.my_tcp_ip_client.fragments;
 
+import android.annotation.SuppressLint;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Vibrator;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
+import android.widget.ImageButton;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.des808.my_tcp_ip_client.R;
+import com.example.des808.my_tcp_ip_client.adapter.ChatMessageAdapter;
+import com.example.des808.my_tcp_ip_client.classs.Chat;
+import com.example.des808.my_tcp_ip_client.db.DBChatAdapter;
 import com.example.des808.my_tcp_ip_client.interfaces.onFragment_TCP_IP_Init;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 public class fragment_TCP_IP extends Fragment {
     private OnFragmentInteractionListener mListener;
@@ -25,7 +38,24 @@ public class fragment_TCP_IP extends Fragment {
     private static final String FRAGMENT_NAME = "fragment_TCP_IP ";
     SharedPreferences sharedPreferencesMain;
     //private Button button;
+
     private static final String LOG_TAG = "LOG_TAG" ;
+
+    private DBChatAdapter db_chat_Adapter;
+    private ChatMessageAdapter chatMessageAdapter;
+
+
+    private List<Chat> chatsList = new ArrayList<>();
+    private RecyclerView recyclerView;//создаем переменную для отображения сообщений
+    private Vibrator vibrator;
+    public static ProgressDialog dialog;
+    private static boolean connectToServer;
+   /* public MenuItem menu_switch_btn;
+    public MenuItem menu_clearChat;*/
+    public EditText object,clas,razd,schs;
+    public ImageButton btnSend_tx;
+    private boolean is_fragment_TcpIP;
+
 
     public fragment_TCP_IP() {
         // Required empty public constructor
@@ -64,6 +94,10 @@ public class fragment_TCP_IP extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         view = inflater.inflate( R.layout.fragment_tcp_ip, container, false );
         sharedPreferencesMain = getActivity() != null ? getActivity().getSharedPreferences(PREFS_FILE, PREFS_MODE) : null;
+
+
+
+
         return view;
     }
 
@@ -71,6 +105,7 @@ public class fragment_TCP_IP extends Fragment {
     public void onStart() {
         super.onStart();
         mFragmentTCPIPInit.on_FragmentTCP_IP_Init();
+        //on_FragmentTCP_IP_Init();
         chatMessageOrChatAndromedaLayout();
         //Log.d(LOG_TAG, "onStart FragmentTCP_IP");
     }
@@ -88,6 +123,7 @@ public class fragment_TCP_IP extends Fragment {
         mListener = null;
         //Log.d(LOG_TAG, "onDeath FragmentTCP_IP");
         mFragmentTCPIPInit.on_FragmentTCP_IP_Disconnect();
+        //DisconnectToServer();//Отключаемся от сервера
     }
 
     public interface OnFragmentInteractionListener {
@@ -117,6 +153,48 @@ public class fragment_TCP_IP extends Fragment {
         newView.setLayoutParams(params);
         fragmentLayout.addView(newView);
     }
+
+    /*private  void initRecyclerView(){
+        recyclerView = getActivity().findViewById(R.id.list_messages);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        recyclerView.setAdapter(chatMessageAdapter);// устанавливаем для списка адаптер
+    }*/
+    /*TODO
+     *  String i - текст сообщения
+     *  boolean in_out - true - исходящие сообщения output = true
+     *  boolean in_out - false - входящие сообщения input = false
+     * */
+    /*public void addChatMessage(String i ,boolean in_out){
+        Chat chat = new Chat(in_out);//создаем переменную для отображения сообщений в бд
+        chat.setMessage_time(MessageTime.getTime());
+        if (!in_out){//true - входящие сообщения
+            chat.setMessage_in(i);
+        }else{//false - исходящие сообщения
+            chat.setMessage_out(i);
+        }
+        long insert = db_chat_Adapter.addDBMessage(chat);//сохраняем сообщение в БД
+        chat.setId((int) insert);
+        //Log.d(LOG_TAG, "AddMessage id = " + insert);
+        chatsList.add(chat);//выводим сообщение в список
+        refreshChatListView();
+    }*/
+    @SuppressLint("NotifyDataSetChanged")
+    private void refreshChatListView(){
+        Objects.requireNonNull(recyclerView.getAdapter()).notifyDataSetChanged();
+        recyclerView.smoothScrollToPosition(recyclerView.getAdapter().getItemCount() - 1);
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    public void clearRecyclerView() {
+        chatsList.clear();
+        Objects.requireNonNull(recyclerView.getAdapter()).notifyDataSetChanged();
+    }
+
+
+
+
+
+
 
 
 

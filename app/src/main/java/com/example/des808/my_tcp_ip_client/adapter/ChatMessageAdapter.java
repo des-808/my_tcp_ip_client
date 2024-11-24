@@ -9,7 +9,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.des808.my_tcp_ip_client.Chat;
+import com.example.des808.my_tcp_ip_client.classs.Chat;
 import com.example.des808.my_tcp_ip_client.R;
 
 import java.util.List;

@@ -1,4 +1,4 @@
-package com.example.des808.my_tcp_ip_client;
+package com.example.des808.my_tcp_ip_client.db;
 
 import android.annotation.SuppressLint;
 import android.content.ContentValues;
@@ -7,6 +7,8 @@ import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
+
+import com.example.des808.my_tcp_ip_client.classs.Chat;
 
 import java.util.ArrayList;
 import java.util.List;

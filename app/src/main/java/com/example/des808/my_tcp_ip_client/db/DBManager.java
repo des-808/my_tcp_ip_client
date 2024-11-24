@@ -1,9 +1,11 @@
-package com.example.des808.my_tcp_ip_client;
+package com.example.des808.my_tcp_ip_client.db;
 
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+
+import com.example.des808.my_tcp_ip_client.classs.TitleChatsItems;
 
 import java.util.ArrayList;
 import java.util.HashMap;
