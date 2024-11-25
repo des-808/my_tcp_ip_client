@@ -24,18 +24,17 @@ import com.example.des808.my_tcp_ip_client.classs.TitleChatsItems;
 import com.example.des808.my_tcp_ip_client.db.DBChatAdapter;
 import com.example.des808.my_tcp_ip_client.db.DBChatHelper;
 import com.example.des808.my_tcp_ip_client.db.DBManager;
-import com.example.des808.my_tcp_ip_client.interfaces.onListViewFragmentTitle;
 import com.example.des808.my_tcp_ip_client.interfaces.onStartFragmentTcpIp;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Objects;
 
 public class fragment_titles extends Fragment
 {
     //private OnFragmentItemClickListener mClickCallback;
    // private OnFragmentInteractionListener mListener;
-    private onListViewFragmentTitle ONListViewFragmentTitle;
     private onStartFragmentTcpIp OnStartFragmentTcpIp;
     //private static final String LOG_TAG = "LOG_TAG" ;
 
@@ -85,7 +84,7 @@ public class fragment_titles extends Fragment
     }
     //######################################################################################################
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_title, container, false);
         db_chat_Adapter = new DBChatAdapter(getActivity());//создаём адаптер
         ListView newlist = (ListView) v.findViewById(R.id.list);
@@ -99,7 +98,7 @@ public class fragment_titles extends Fragment
 
     @Override
     public void onAttach(@Nullable Context context) {
-        super.onAttach( context );
+        super.onAttach(context);
         if (context instanceof onStartFragmentTcpIp)
         {
             try {
@@ -109,15 +108,6 @@ public class fragment_titles extends Fragment
                 throw new ClassCastException(context.toString() + " must implement onStartFragmentTcpIp");
             }
         }
-        /*if (context instanceof onListViewFragmentTitle)
-        {
-            try {
-                ONListViewFragmentTitle = (onListViewFragmentTitle) context;
-            }catch (ClassCastException e)
-            {
-                throw new ClassCastException(context.toString() + " must implement ONListViewFragmentTitle");
-            }
-        }*/
         /*try {
             mClickCallback = (OnFragmentItemClickListener) context;
         } catch (ClassCastException e) { throw new ClassCastException(context.toString() + " must implement OnFragmentItemClickListener");}*/
@@ -165,7 +155,7 @@ public class fragment_titles extends Fragment
 
     private void refreshTitleList() {
         ArrayList<TitleChatsItems> list = DBManager.getInstance( getActivity() ).getAllContacts();
-        C_Adapter = new ChatsTitleAdapter( getActivity(), list );
+        C_Adapter = new ChatsTitleAdapter(getActivity() != null ? getActivity() : null, list );
         LVMain = getView().findViewById( R.id.list );
         LVMain.setAdapter( C_Adapter );
     }
@@ -175,7 +165,7 @@ public class fragment_titles extends Fragment
         View root = dlgInfater != null ? dlgInfater.inflate(R.layout.row_pod_menu, null) : null;
         final EditText name_ = root != null ? root.findViewById(R.id.detailsName) : null;
         final EditText ipadr_ = root != null ? root.findViewById(R.id.detailsIpAdr) : null;
-        final EditText port_ =  root.findViewById( R.id.detailsPort );
+        final EditText port_ = root != null ? root.findViewById(R.id.detailsPort) : null;
 
         final AlertDialog.Builder builder = new AlertDialog.Builder( getActivity() );
         builder.setView( root );
@@ -183,9 +173,9 @@ public class fragment_titles extends Fragment
 
         builder.setPositiveButton( "Сохранить", (dialog, id) -> {
             TitleChatsItems item = new TitleChatsItems(
-                    name_.getText().toString(),
-                    ipadr_.getText().toString(),
-                    port_.getText().toString() );
+                    name_ != null ? name_.getText().toString() : null,
+                    ipadr_ != null ? ipadr_.getText().toString() : null,
+                    port_ != null ? port_.getText().toString() : null);
             DBManager.getInstance( getContext() ).addContact( item );
             //list.add( item );
             refreshTitleList();
@@ -196,13 +186,13 @@ public class fragment_titles extends Fragment
     }
 
     public void openRemoveDialog(final TitleChatsItems item) {
-        LayoutInflater dlgInfater = (LayoutInflater) getActivity().getSystemService( Context.LAYOUT_INFLATER_SERVICE );
-        View root = dlgInfater.inflate( R.layout.row_pod_menu, null );
-        final EditText name_ = root.findViewById( R.id.detailsName );
-        final EditText ipadr_ = root.findViewById( R.id.detailsIpAdr );
-        final EditText port_ = root.findViewById( R.id.detailsPort );
+        LayoutInflater dlgInfater = (LayoutInflater) (getActivity() != null ? getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE) : null);
+        View root = dlgInfater != null ? dlgInfater.inflate(R.layout.row_pod_menu, null) : null;
+        final EditText name_ = root != null ? root.findViewById(R.id.detailsName) : null;
+        final EditText ipadr_ = root != null ? root.findViewById(R.id.detailsIpAdr) : null;
+        final EditText port_ = root != null ? root.findViewById(R.id.detailsPort) : null;
 
-        name_.setText( item.getName() );
+        Objects.requireNonNull(name_).setText( item.getName() );
         ipadr_.setText( item.getIp_adr() );
         port_.setText( item.getPort() );
 
@@ -225,8 +215,8 @@ public class fragment_titles extends Fragment
     }
 
     public void openDeleteDialog(final TitleChatsItems item) {
-        LayoutInflater dlgInflater = (LayoutInflater) getActivity().getSystemService( Context.LAYOUT_INFLATER_SERVICE );
-        dlgInflater.inflate( R.layout.row_pod_menu, null );
+        LayoutInflater dlgInflater = (LayoutInflater) (getActivity() != null ? getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE) : null);
+        Objects.requireNonNull(dlgInflater).inflate( R.layout.row_pod_menu, null );
 
         AlertDialog.Builder builder = new AlertDialog.Builder( getActivity());
         builder.setMessage( String.format( "Удалить контакт %s?", item.getName() ) );

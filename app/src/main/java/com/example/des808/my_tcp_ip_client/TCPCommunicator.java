@@ -122,7 +122,9 @@ public class TCPCommunicator {
         return new InitTCPClientTask();
     }
 
-  /*  public class InitTCPClientTask extends AsyncTask<Void, Void, Void>
+	public enum TCPWriterErrors{UnknownHostException,IOException,otherProblem,OK}
+
+   /* public class InitTCPClientTask extends AsyncTask<Void, Void, Void>
 	{
 		public InitTCPClientTask() { }
 		@SuppressLint("SuspiciousIndentation")
@@ -130,9 +132,9 @@ public class TCPCommunicator {
 		protected Void doInBackground(Void... params) {
 			try
 			{
-				  *//* s = new Socket(getServerHost(), getServerPort());
+				   s = new Socket(getServerHost(), getServerPort());
 		          in = new BufferedReader(new InputStreamReader(s.getInputStream()));
-				 out = new BufferedWriter(new OutputStreamWriter(s.getOutputStream()));*//*
+				 out = new BufferedWriter(new OutputStreamWriter(s.getOutputStream()));
 
 				Socket s = new Socket(getServerHost(), getServerPort());
 				InputStream in = s.getInputStream();
@@ -140,17 +142,17 @@ public class TCPCommunicator {
 
 				 StringBuilder inMsg = new StringBuilder();
 				final int length = 65535;
-				//char[] charBuffer = new char[length];
-				byte[] byteBuffer = new byte[length];
+				char[] charBuffer = new char[length];
+				//byte[] byteBuffer = new byte[length];
 		         for(TCPListener listener:allListeners) listener.onTCPConnectionStatusChanged(true);
 				int count;// счетчик символов
                 while(true){
 					byte[] byteBuffer2 = new byte[length];
-                    count = in.read(byteBuffer, 0, length);
-					System.arraycopy(byteBuffer, 0, byteBuffer2, 0, count);
-					*//*ByteBuffer byteBuffer = ByteBuffer.allocate(charBuffer.length * 2);
+                   // count = in.read(byteBuffer, 0, length);
+					//System.arraycopy(byteBuffer, 0, byteBuffer2, 0, count);
+					ByteBuffer byteBuffer = ByteBuffer.allocate(charBuffer.length * 2);
 					for (char c : charBuffer) {byteBuffer.putChar(c);}
-					byteBuffer.flip();*//*
+					byteBuffer.flip();
                     if (count > 0) {
 
                         for (int index = 0; count != index; index++){
@@ -177,12 +179,11 @@ public class TCPCommunicator {
 			catch (IndexOutOfBoundsException e)	{e.printStackTrace();}
 			return null;
 		}
-	}
-	public enum TCPWriterErrors{UnknownHostException,IOException,otherProblem,OK}*/
+	}*/
+
 
 //ConnectException
 //ErrnoException
-
 
 public class InitTCPClientTask extends AsyncTask<Void, Void, Void>
 {
@@ -213,15 +214,12 @@ public class InitTCPClientTask extends AsyncTask<Void, Void, Void>
 						}
 						index++;
 					} while (count != index);
-					for (TCPListener listener : allListeners)
-					{
-						listener.onTCPMessageRecieved(String.valueOf((inMsg)));//
-                    }
-					/*for (TCPListener listener : allListeners)
-						listener.onTCPMessageRecieved(new String(charBuffer, 0, count, StandardCharsets.UTF_8 ));*/
+					for (TCPListener listener : allListeners)listener.onTCPMessageRecieved(String.valueOf((inMsg)));
+					//for (TCPListener listener : allListeners) listener.onTCPMessageRecieved(new String(charBuffer, 0, count, StandardCharsets.UTF_8 ));
+
 					Log.d("TcpClientInputMessage", "sent: " + inMsg);
 					inMsg.delete(0, count); // обнуляем буфер
-					//count = -1;// обнуляем счетчик
+					count = -1;// обнуляем счетчик
 				}
 			} while (true);
 		}
@@ -231,5 +229,5 @@ public class InitTCPClientTask extends AsyncTask<Void, Void, Void>
 		return null;
 	}
 }
-	public enum TCPWriterErrors{UnknownHostException,IOException,otherProblem,OK}
+
 }

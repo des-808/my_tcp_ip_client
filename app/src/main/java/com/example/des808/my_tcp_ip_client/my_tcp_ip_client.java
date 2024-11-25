@@ -4,20 +4,25 @@ package com.example.des808.my_tcp_ip_client;
 import static java.lang.Integer.parseInt;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Vibrator;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -61,7 +66,6 @@ public class my_tcp_ip_client extends AppCompatActivity
     implements  //fragment_titles.OnFragmentInteractionListener,
                 //fragment_titles.OnFragmentItemClickListener,
         onStartFragmentTcpIp,
-        //onListViewFragmentTitle,
         onFragment_TCP_IP_Init,
         TCPListener,
         //OnSettingsFragment,
@@ -105,7 +109,6 @@ public class my_tcp_ip_client extends AppCompatActivity
     //private static final String PREFS_FILE = "com.example.des808.my_tcp_ip_client_preferences";
     //private static final String KEY_ANDROMEDA = "switch_andromeda";
     //private static final int PREFS_MODE = Context.MODE_PRIVATE;//Context.MODE_PRIVATE;
-
     //SharedPreferences sharedPreferencesMain;
     //SharedPreferences.Editor prefEditor;
 
@@ -115,7 +118,8 @@ public class my_tcp_ip_client extends AppCompatActivity
 
     DBChatAdapter db_chat_Adapter; //создаем переменную для работы с базой данных
     ChatMessageAdapter chatMessageAdapter;//создаем переменную для работы с clickable
-    private ProgressDialog dialog;
+    private ProgressDialog dialogOld;
+    private AlertDialog dialogNew;
 
     public  boolean isHaveVibrate(){//Проверка наличия вибрации
         return vibrator.hasVibrator();//если нет вибрации то возвращаем false
@@ -138,7 +142,7 @@ public class my_tcp_ip_client extends AppCompatActivity
         // начальная инициализация списка
         initRecyclerView();
         clearRecyclerView();
-        menu_clearChat.setVisible(true);
+        if(menu_clearChat!=null)menu_clearChat.setVisible(true);
         ConnectToServer();
         chatsList.addAll(db_chat_Adapter.getMessages());//добавляем сообщения из БД в список
 //package:mine
@@ -196,17 +200,9 @@ public class my_tcp_ip_client extends AppCompatActivity
         fragTitles = new fragment_titles();
         fragTCP_IP = new fragment_TCP_IP();
         sv = findViewById(R.id.FrLay);
-
         ////////////////////////////////////////////////////////////////////////////////////////////////////
         //sharedPreferencesMain = getSharedPreferences(PREFS_FILE, PREFS_MODE);
         ////////////////////////////////////////////////////////////////////////////////////////////////////
-       // toolbar = findViewById(R.id.toolbar);
-        //setSupportActionBar(toolbar);
-
-        /*toogle = new ActionBarDrawerToggle(this,drawerLayout,R.string.navigation_drawer_open,R.string.navigation_drawer_close);
-        drawerLayout.addDrawerListener(toogle);
-        toogle.syncState();
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);*/
         ////////////////////////////////////////////////////////////////////////////////////////////////////
         //создаем переменную для работы с базой данных
         ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -275,11 +271,16 @@ public class my_tcp_ip_client extends AppCompatActivity
         }else if(fragmentsInStack == 1){
             dialogFragment = new fragment_exit( "Так ты точно хочешь выйти???" );
             dialogFragment.show( fManager, "dialog" );
+            //или
+            //alertDialog();
         }
     }
 
     //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    public void doPositiveClick() {this.finish();}
+    public void doPositiveClick() {
+        this.finish();
+        //alertDialog();
+    }
     public void doNegativeClick() {}
 
     @Override
@@ -370,12 +371,29 @@ public class my_tcp_ip_client extends AppCompatActivity
         Log.d(LOG_TAG, "onSaveInstanceState");
     }
 
-    private void setupDialog() {
-        dialog = new ProgressDialog( this, ProgressDialog.STYLE_SPINNER );//STYLE_SPINNER
-        dialog.setTitle( "Connecting" );
-        dialog.setMessage( "Please wait..." );
-        dialog.setIndeterminate( true );
-        dialog.show();
+
+
+    private void alertDialog() {
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(my_tcp_ip_client.this);
+        alertDialogBuilder.setTitle("Так ты точно хочешь выйти??");
+        alertDialogBuilder.setIcon(android.R.drawable.ic_dialog_alert);
+        alertDialogBuilder
+        .setCancelable(true)
+        .setPositiveButton("Да", new DialogInterface.OnClickListener(){
+            @Override
+            public void onClick(DialogInterface dialog, int arg1) {
+                //tostShort("Правильный выбор!!");
+                my_tcp_ip_client.this.finish();
+        }
+        })
+        .setNegativeButton("Нет",new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int arg1) {
+                dialog.cancel();
+            }
+        });
+        AlertDialog alertDialog = alertDialogBuilder.create();
+        alertDialog.show();
     }
 
     private void ConnectToServer() {
@@ -393,7 +411,6 @@ public class my_tcp_ip_client extends AppCompatActivity
     private void DisconnectToServer(){
         if(TCPCommunicator.getInstance()!= null){
             TCPCommunicator.closeStreams();
-
             TCPCommunicator.removeAllListeners();
             connectToServer = false;
             menu_switch_btn.setIcon(R.drawable.ic_otkl);
@@ -477,7 +494,8 @@ public class my_tcp_ip_client extends AppCompatActivity
         if(isConnectedNow)
         {
             runOnUiThread(() -> {
-                dialog.hide();
+                //dialogOld.hide();
+                dialogNew.hide();
                 connectToServer = true;
                 if(is_fragment_TcpIP){
                     menu_switch_btn.setIcon(R.drawable.ic_podkl);
@@ -485,7 +503,39 @@ public class my_tcp_ip_client extends AppCompatActivity
             });
         }
     }
+    /*private void setupDialog() {//устарело
+        dialogOld = new ProgressDialog( this, ProgressDialog.STYLE_SPINNER );//STYLE_SPINNER
+        dialogOld.setTitle( "Connecting" );
+        dialogOld.setMessage( "Please wait..." );
+        dialogOld.setIndeterminate( true );
+        dialogOld.show();
+    }*/
 
+    @SuppressLint("SetTextI18n")
+    private void setupDialog() {//вместо устаревшего ProgressDialog
+        LinearLayout layout = new LinearLayout(this);
+        layout.setOrientation(LinearLayout.HORIZONTAL);
+        ProgressBar progressBar = new ProgressBar(this);
+        layout.setPadding(50,50,0,40);
+        progressBar.setIndeterminate(true);
+        layout.addView(progressBar);
+
+        TextView textView = new TextView(this);
+        textView.setText(R.string.please_wait);
+        textView.setGravity(Gravity.HORIZONTAL_GRAVITY_MASK);
+        textView.setTextSize(14);
+        textView.setPadding(50,50,0,40);
+        layout.addView(textView);
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setIcon(android.R.drawable.ic_dialog_info);
+        builder.setTitle(R.string.connecting);
+        builder.setCancelable(true);
+        builder.setView(layout);
+
+        dialogNew = builder.create();
+        dialogNew.show();
+    }
     /*public void TimePaused(long i){
         Handler handler = new Handler();
         handler.postDelayed(new Runnable() {public void run() { }}, i);
