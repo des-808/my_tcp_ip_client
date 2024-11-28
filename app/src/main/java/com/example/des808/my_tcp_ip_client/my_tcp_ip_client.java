@@ -5,13 +5,14 @@ import static java.lang.Integer.parseInt;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.VibrationEffect;
 import android.os.Vibrator;
 import android.util.Log;
 import android.view.Gravity;
@@ -21,7 +22,6 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -36,12 +36,9 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.des808.my_tcp_ip_client.adapter.ChatMessageAdapter;
-import com.example.des808.my_tcp_ip_client.adapter.ChatsTitleAdapter;
 import com.example.des808.my_tcp_ip_client.classs.Adress;
 import com.example.des808.my_tcp_ip_client.classs.Chat;
-import com.example.des808.my_tcp_ip_client.classs.DecimalToHex;
 import com.example.des808.my_tcp_ip_client.classs.MessageTime;
-import com.example.des808.my_tcp_ip_client.classs.TitleChatsItems;
 import com.example.des808.my_tcp_ip_client.db.DBChatAdapter;
 import com.example.des808.my_tcp_ip_client.fragments.SharedPreferenceFragment;
 import com.example.des808.my_tcp_ip_client.fragments.fragment_TCP_IP;
@@ -52,6 +49,7 @@ import com.example.des808.my_tcp_ip_client.interfaces.TCPListener;
 import com.example.des808.my_tcp_ip_client.interfaces.onFragment_TCP_IP_Init;
 import com.example.des808.my_tcp_ip_client.interfaces.onStartFragmentTcpIp;
 
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -59,8 +57,6 @@ import java.util.Objects;
 //import static com.example.des808.my_tcp_ip_client.TCPCommunicator.removeAllListeners;
 /* // greenrobot eventbus урок на ютубе
     //https://www.youtube.com/watch?v=WnzSkRinnuc*/
-
-
 
 public class my_tcp_ip_client extends AppCompatActivity
     implements  //fragment_titles.OnFragmentInteractionListener,
@@ -75,12 +71,8 @@ public class my_tcp_ip_client extends AppCompatActivity
 
     private static final String LOG_TAG = "LOG_TAG";
     //private ArrayList<TitleChatsItems> list;
-    private ChatsTitleAdapter C_Adapter;
     private final boolean IN_MSG = false;
     private final boolean OUT_MSG = true;
-    final int MENU_RENAME = 1;
-    final int MENU_DELETE = 2;
-    //final int MENU_CANCEL = 3;
     final int ACK = 6;
     final int NACK = 21;
     final int SUCCESSFULLY = 0x14;
@@ -88,10 +80,7 @@ public class my_tcp_ip_client extends AppCompatActivity
     public String mMessage;
     public Toast toast;
     public String table_name, ipAdr, port;
-    public TitleChatsItems items;
-    ListView LVMain;
 
-    //public ActionBar actionBar;
     private final Handler UIHandler = new Handler();
     public MenuItem menu_switch_btn;
     public MenuItem menu_clearChat;
@@ -118,11 +107,17 @@ public class my_tcp_ip_client extends AppCompatActivity
 
     DBChatAdapter db_chat_Adapter; //создаем переменную для работы с базой данных
     ChatMessageAdapter chatMessageAdapter;//создаем переменную для работы с clickable
-    private ProgressDialog dialogOld;
-    private AlertDialog dialogNew;
+    private AlertDialog dialog;
 
-    public  boolean isHaveVibrate(){//Проверка наличия вибрации
-        return vibrator.hasVibrator();//если нет вибрации то возвращаем false
+    public  void startVibrate(int millisecondsVibrate){
+        if(vibrator.hasVibrator()){//если нет вибрации то возвращаем false
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                VibrationEffect effect = VibrationEffect.createOneShot(millisecondsVibrate, VibrationEffect.DEFAULT_AMPLITUDE);
+                vibrator.vibrate(effect);
+            } else {
+                vibrator.vibrate(millisecondsVibrate);
+            }
+        }
     }
 
     //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -167,7 +162,7 @@ public class my_tcp_ip_client extends AppCompatActivity
             chat.setMessage_out(i);
         }
         long insert = db_chat_Adapter.addDBMessage(chat);//сохраняем сообщение в БД
-        chat.setId((int) insert);
+        chat.setId( insert);
         //Log.d(LOG_TAG, "AddMessage id = " + insert);
         chatsList.add(chat);//выводим сообщение в список
         refreshChatListView();
@@ -175,7 +170,11 @@ public class my_tcp_ip_client extends AppCompatActivity
     @SuppressLint("NotifyDataSetChanged")
     private void refreshChatListView(){
         Objects.requireNonNull(recyclerView.getAdapter()).notifyDataSetChanged();
-        recyclerView.smoothScrollToPosition(recyclerView.getAdapter().getItemCount() - 1);
+        int position = recyclerView.getAdapter().getItemCount() - 1;
+        if (position >= 0) {
+            recyclerView.smoothScrollToPosition(position);
+        }
+        //recyclerView.smoothScrollToPosition(recyclerView.getAdapter().getItemCount() - 1);
     }
     @SuppressLint("NotifyDataSetChanged")
     private void clearRecyclerView() {
@@ -190,13 +189,11 @@ public class my_tcp_ip_client extends AppCompatActivity
         DisconnectToServer();
     }
 
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate( savedInstanceState );
         setContentView( R.layout.activity_my_tcp_ip_client );
         vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-        //actionBar = this.getActionBar();
         fragTitles = new fragment_titles();
         fragTCP_IP = new fragment_TCP_IP();
         sv = findViewById(R.id.FrLay);
@@ -209,16 +206,13 @@ public class my_tcp_ip_client extends AppCompatActivity
         db_chat_Adapter = new DBChatAdapter(this);
         chatMessageAdapter = new ChatMessageAdapter( chatsList);
         chatMessageAdapter.setOnItemClickListener((position, view, chat) -> {
-            int pos = chat.getId();
-            //Drawable foreground = view.getForeground();
-            //view.setForeground(foreground);
-            // view.setBackgroundColor(Color.parseColor("#0000FF"));
+            long pos = chat.getId();
            Log.d(LOG_TAG, "onItemClick " + position + " onItemClick id=" + pos);
         });
 
         chatMessageAdapter.setOnItemLongClickListener((position, view, chat) -> {
-            int pos = chat.getId();
-            int remove =  db_chat_Adapter.deleteMessage(pos);
+            long pos = chat.getId();
+            long remove =  db_chat_Adapter.deleteMessage(pos);
             chatMessageAdapter.deleteItemByPosition(position);
             //Log.d(LOG_TAG, "RemoveMessage id = " + pos);
            // Log.d(LOG_TAG, "onItemLongClick position=" + position+" onItemLongClick id="+ pos + " remove="+remove);
@@ -238,7 +232,6 @@ public class my_tcp_ip_client extends AppCompatActivity
 
     @Override
     protected void onResume() {super.onResume();}
-
     @Override
     protected void onStart() {super.onStart();}
 
@@ -249,7 +242,7 @@ public class my_tcp_ip_client extends AppCompatActivity
 
     public void replaceFragment(Fragment fragment, String tag){
         Fragment currentFragment = fManager.findFragmentById(R.id.FrLay);
-        if(currentFragment.getClass() == fragment.getClass()){return;}
+        if((currentFragment != null ? currentFragment.getClass() : null) == fragment.getClass()){return;}
         if(fManager.findFragmentByTag(tag)!= null){
             fManager.popBackStack(tag, FragmentManager.POP_BACK_STACK_INCLUSIVE);
         }
@@ -267,34 +260,28 @@ public class my_tcp_ip_client extends AppCompatActivity
        // tost(String.valueOf(fragmentsInStack));
         if (fragmentsInStack > 1) {
             //fManager.popBackStack("fragment_titles",0);
-            fManager.popBackStack();
+            //fManager.popBackStack();
+            fManager.popBackStackImmediate();
         }else if(fragmentsInStack == 1){
             dialogFragment = new fragment_exit( "Так ты точно хочешь выйти???" );
             dialogFragment.show( fManager, "dialog" );
             //или
-            //alertDialog();
+            //alertDialog("Так ты точно хочешь выйти???");
         }
     }
 
     //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    public void doPositiveClick() {
-        this.finish();
-        //alertDialog();
-    }
+    public void doPositiveClick() {this.finish();}//alertDialog();
     public void doNegativeClick() {}
 
     @Override
-    protected void onPause() {
-        super.onPause();
-    }
+    protected void onPause() {super.onPause();}
 
     @Override
     protected void onDestroy() {
-        super.onDestroy();
-        //EventBus.getDefault().unregister( this );
+        super.onDestroy();//EventBus.getDefault().unregister( this );
         try {
             DisconnectToServer();
-            //DisconnectToServer();
         }catch (Exception e) {
             Log.d(LOG_TAG, String.valueOf(e));
         }
@@ -312,9 +299,9 @@ public class my_tcp_ip_client extends AppCompatActivity
     //###################################################################################################
 
     public void on_startFragmentTcpIp(Adress adr){
-        table_name=adr.getName();
-        ipAdr=adr.getIp();
-        port=adr.getPort();
+        table_name = adr.getName();
+        ipAdr = adr.getIp();
+        port = adr.getPort();
         replaceFragment(new fragment_TCP_IP(), "fragment_TCP_IP");
     }
     public void onStartFragmentTCP_IP() {
@@ -322,7 +309,7 @@ public class my_tcp_ip_client extends AppCompatActivity
     }
 
     public void sendTx(View v)  {
-        vibrator.vibrate(100);
+        startVibrate(100);
             object = findViewById(R.id.editObjekt);
             clas = findViewById(R.id.editClass);
             razd = findViewById(R.id.editRazd);
@@ -344,14 +331,14 @@ public class my_tcp_ip_client extends AppCompatActivity
     }
 
     public void sendChatTx(View v)  {
-        vibrator.vibrate(100);
+        startVibrate(100);
             EditText  E_Send = findViewById( R.id.EChat_Send );
             String E_text = E_Send.getText().toString();
-            if(E_text.isEmpty()) {
+            if(E_text.isEmpty()) {// если поле пустое то вызываем Toast с сообщением что нужно ввести текст
                 Toast.makeText(this, "Please enter text", Toast.LENGTH_SHORT).show();
                 return;
             }
-            E_Send.setText( "" );
+            E_Send.setText( "" );//сброс текста в поле отправляемых сообщений
             if (TCPCommunicator.writeToSocket(E_text, UIHandler, this) == TCPCommunicator.TCPWriterErrors.OK) {
                 addChatMessage(E_text,OUT_MSG);
             } else {
@@ -373,9 +360,10 @@ public class my_tcp_ip_client extends AppCompatActivity
 
 
 
-    private void alertDialog() {
+    private void alertDialog(String msg) {
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(my_tcp_ip_client.this);
-        alertDialogBuilder.setTitle("Так ты точно хочешь выйти??");
+        //alertDialogBuilder.setTitle("Так ты точно хочешь выйти??");
+        alertDialogBuilder.setTitle(msg);
         alertDialogBuilder.setIcon(android.R.drawable.ic_dialog_alert);
         alertDialogBuilder
         .setCancelable(true)
@@ -428,74 +416,42 @@ public class my_tcp_ip_client extends AppCompatActivity
         });
     }
 
-    @Override
-    public void onTCPMessageRecievedCharBuffer(char[] inMsgCharBuffer, int count, int len) {
-        StringBuilder inMsg = new StringBuilder();
-						int index = 0;
-						if(count >= 0) {
 
-                            do {
-                                //if ((inMsgCharBuffer[index]) != '\n' && (inMsgCharBuffer[index]) != 0x0D && (inMsgCharBuffer[index] >= 0 && (inMsgCharBuffer[index]) < 32)) {
-                                if ((inMsgCharBuffer[index]) != '\n' && (inMsgCharBuffer[index]) != 0x0D && (inMsgCharBuffer[index] > 0 && (inMsgCharBuffer[index]) < 32)) {
-                                    inMsg.append(DecimalToHex.toHex(inMsgCharBuffer[index]));
-                                } else {
-                                    inMsg.append((inMsgCharBuffer[index]));
-                                }
-                                index++;
-                            } while (count != index);
-                        }
+    public void onTCPMessageRecievedByteBuffer(byte[] inMsgByteBuffer,int count){
+       String hex = byteBufferToHex(inMsgByteBuffer, count);
+        //String message1 = new String(inMsgByteBuffer, 0, count, StandardCharsets.UTF_8);
+        //String formattedMessage = String.format("%n%s%n", hex);
+        //Snackbar.make(sv,message1+"   "+hex+"\n",Snackbar.LENGTH_SHORT).show();
+        //String message2 = new String(inMsgByteBuffer, 0, count, StandardCharsets.US_ASCII);
+        String message = new String(inMsgByteBuffer, 0, count, Charset.forName("CP1251"));
+
+        String result = message+"\n"+hex;
         runOnUiThread(() -> {
-            //tost("onTCPMessageRecieved: "+theMessage);
-            addChatMessage(String.valueOf(inMsg),IN_MSG);
+                addChatMessage(result, IN_MSG);
         });
-                            inMsg.delete(0,count); // обнуляем буфер
     }
 
-    public void onTCPMessageRecievedChar(final char messageChar){
-        String msg= String.valueOf( messageChar );
-        String msg2 = "";
-        if(messageChar == 0x06){
-           msg = " ACK\n";
-        }
-        if(messageChar == 0x15){
-            msg = " NACK\n";
-        }
-        if (!msg.equals("\n")){
-            msg2 = msg2 + messageChar;
-        }
-        else {
-            msg = msg2;
-        }
-       final String theMessageChar = msg;
+    public String byteBufferToHex(byte[] inMsgByteBuffer,int count){
+    //перевод в hex
+        StringBuilder sb = new StringBuilder();
 
-        runOnUiThread(() -> addChatMessage(theMessageChar,IN_MSG));
+            for (int i = 0; i < count; i++) {
+
+                    if (inMsgByteBuffer[i] == 10 ) {
+                        sb.append(String.format("%02X\n ", inMsgByteBuffer[i]));
+                    } else {
+                        sb.append(String.format("%02X ", inMsgByteBuffer[i]));
+                    }
+
+            }
+        return sb.toString();
     }
-    public void onTCPMessageRecievedInt(final Integer messageInt) {
-        final int theMessageInt = messageInt;
-        String Message = "";
-        switch (theMessageInt){
-            case ACK:
-                Message = (" ACK");break;
-            case NACK:
-                Message = (" NACK");break;
-            case SUCCESSFULLY:
-                Message = (" OK");break;
-            default:break;
-        }
-        if (theMessageInt == -1){
-
-        }
-        final String msg = (Message);
-        runOnUiThread(() -> addChatMessage(msg,IN_MSG));
-    }
-
     @Override
     public void onTCPConnectionStatusChanged(boolean isConnectedNow) {
         if(isConnectedNow)
         {
             runOnUiThread(() -> {
-                //dialogOld.hide();
-                dialogNew.hide();
+                dialog.hide();
                 connectToServer = true;
                 if(is_fragment_TcpIP){
                     menu_switch_btn.setIcon(R.drawable.ic_podkl);
@@ -503,16 +459,8 @@ public class my_tcp_ip_client extends AppCompatActivity
             });
         }
     }
-    /*private void setupDialog() {//устарело
-        dialogOld = new ProgressDialog( this, ProgressDialog.STYLE_SPINNER );//STYLE_SPINNER
-        dialogOld.setTitle( "Connecting" );
-        dialogOld.setMessage( "Please wait..." );
-        dialogOld.setIndeterminate( true );
-        dialogOld.show();
-    }*/
 
-    @SuppressLint("SetTextI18n")
-    private void setupDialog() {//вместо устаревшего ProgressDialog
+    private void setupDialog() {//в место устаревшего ProgressDialog
         LinearLayout layout = new LinearLayout(this);
         layout.setOrientation(LinearLayout.HORIZONTAL);
         ProgressBar progressBar = new ProgressBar(this);
@@ -533,8 +481,8 @@ public class my_tcp_ip_client extends AppCompatActivity
         builder.setCancelable(true);
         builder.setView(layout);
 
-        dialogNew = builder.create();
-        dialogNew.show();
+        dialog = builder.create();
+        dialog.show();
     }
     /*public void TimePaused(long i){
         Handler handler = new Handler();

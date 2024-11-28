@@ -15,6 +15,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -24,6 +25,7 @@ import com.example.des808.my_tcp_ip_client.classs.Chat;
 import com.example.des808.my_tcp_ip_client.db.DBChatAdapter;
 import com.example.des808.my_tcp_ip_client.interfaces.onFragment_TCP_IP_Init;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -55,6 +57,7 @@ public class fragment_TCP_IP extends Fragment {
     public EditText object,clas,razd,schs;
     public ImageButton btnSend_tx;
     private boolean is_fragment_TcpIP;
+    private Bundle savedInstanceState;
 
 
     public fragment_TCP_IP() {
@@ -63,9 +66,10 @@ public class fragment_TCP_IP extends Fragment {
 
     //@RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
     // TODO: Rename and change types and number of parameters
-    public static fragment_TCP_IP newInstance(String param1, String param2, String param3) {
-        fragment_TCP_IP fragment = new fragment_TCP_IP();
+    //public static fragment_TCP_IP newInstance(String param1, String param2, String param3) {
+    public static fragment_TCP_IP newInstance(int number) {
         Bundle args = new Bundle();
+        fragment_TCP_IP fragment = new fragment_TCP_IP();
         fragment.setArguments( args );
         return fragment;
     }
@@ -85,18 +89,16 @@ public class fragment_TCP_IP extends Fragment {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        //Log.d(LOG_TAG, "onCreate FragmentTCP_IP");
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        this.savedInstanceState = savedInstanceState;
+        super.onCreate( savedInstanceState );
+        //if (getArguments() != null) {}
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         view = inflater.inflate( R.layout.fragment_tcp_ip, container, false );
         sharedPreferencesMain = getActivity() != null ? getActivity().getSharedPreferences(PREFS_FILE, PREFS_MODE) : null;
-
-
-
 
         return view;
     }
@@ -139,7 +141,7 @@ public class fragment_TCP_IP extends Fragment {
         // Проверяем, существует ли ключ KEY_ANDROMEDA в файле PREFS_FILE
         if (sharedPreferencesMain.contains(KEY_ANDROMEDA)) {
             // Если ключ существует
-            Log.d(LOG_TAG, FRAGMENT_NAME + KEY_ANDROMEDA + " -> " + sharedPreferencesMain.getBoolean(KEY_ANDROMEDA,false));
+            Log.d(LOG_TAG, MessageFormat.format("{0}.{1} -> {2}", FRAGMENT_NAME, KEY_ANDROMEDA, sharedPreferencesMain.getBoolean(KEY_ANDROMEDA, false)));
             if(sharedPreferencesMain.getBoolean(KEY_ANDROMEDA,false) ){
                 newView = getLayoutInflater().inflate(R.layout.row_andromeda_send, null);
             }else {//false режим текста

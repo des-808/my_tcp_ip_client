@@ -3,8 +3,8 @@ package com.example.des808.my_tcp_ip_client.classs;
 public class Chat {
 
 
-    private int id;
-    private int position;
+    private long id;
+    private long position;
     //private String table_name = "";
     private String message_in = "";
     private String message_time = "";
@@ -18,7 +18,7 @@ public class Chat {
         this.outgoing = outgoing;
     }
 
-    public int getPosition() {
+    public long getPosition() {
         return position;
     }
     public boolean setClicked(boolean click){
@@ -27,18 +27,18 @@ public class Chat {
         return clicked;
     }
 
-    public void setPosition(int position) {
+    public void setPosition(long position) {
         this.position = position;
     }
 
-    public Chat(int position) {
+    public Chat(long position) {
         this.position = position;
     }
 
-    public int getId() {
+    public long getId() {
         return id;
     }
-    public void setId(int id) {
+    public void setId(long id) {
         this.id = id;
     }
     public Chat(int id,boolean outgoing, String  messageIn, String timeMessage, String messageOut) {

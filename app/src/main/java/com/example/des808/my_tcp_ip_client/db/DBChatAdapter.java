@@ -133,11 +133,11 @@ public class DBChatAdapter {
     }
 
     // Удаление сообщения
-    public int deleteMessage(int id) {
+    public long deleteMessage(long id) {
         openConnection();
         //openBd();
         String where = String.format("%s=%d", DBChatHelper._ID, id);
-        int res = db.delete(DBChatHelper.TABLE_NAME, where, null);
+        long res = db.delete(DBChatHelper.TABLE_NAME, where, null);
         //closeBd();
 
         return res;

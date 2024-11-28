@@ -86,6 +86,7 @@ public class fragment_titles extends Fragment
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_title, container, false);
+        assert getActivity() != null;
         db_chat_Adapter = new DBChatAdapter(getActivity());//создаём адаптер
         ListView newlist = (ListView) v.findViewById(R.id.list);
         newlist.setOnItemClickListener((arg0, arg1, position, arg3) -> onClickSelected( position ));
