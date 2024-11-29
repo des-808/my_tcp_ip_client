@@ -1,5 +1,6 @@
 package com.example.des808.my_tcp_ip_client.fragments;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.os.Bundle;
@@ -27,9 +28,15 @@ import com.example.des808.my_tcp_ip_client.db.DBManager;
 import com.example.des808.my_tcp_ip_client.interfaces.onStartFragmentTcpIp;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Objects;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 public class fragment_titles extends Fragment
 {
@@ -154,12 +161,117 @@ public class fragment_titles extends Fragment
         //menu.add( 0, MENU_CANCEL, 0, "Отмена" );
     }
 
+   /* @SuppressLint("UseRequireInsteadOfGet")
     private void refreshTitleList() {
         ArrayList<TitleChatsItems> list = DBManager.getInstance( getActivity() ).getAllContacts();
         C_Adapter = new ChatsTitleAdapter(getActivity() != null ? getActivity() : null, list );
-        LVMain = getView().findViewById( R.id.list );
+        LVMain = Objects.requireNonNull(getView()).findViewById( R.id.list );
+        LVMain.setAdapter( C_Adapter );
+    }*/
+/*   @SuppressLint("UseRequireInsteadOfGet")//работает быстро но не то
+    private void refreshTitleList() {
+        new AsyncTask<Void, Void, Void>() {
+            ArrayList<TitleChatsItems> list;
+            @Override
+            protected Void doInBackground(Void... params) {
+                list = DBManager.getInstance( getActivity() ).getAllContacts();
+                for (TitleChatsItems item : list) {
+                    try {
+                        InetAddress.getByName(item.getIp_adr());
+                        System.out.println("Port is available");
+                        item.setOnline(true);
+                    } catch (IOException e) {
+                        System.out.println("Port is not available");
+                        item.setOnline(false);
+                    }
+                }
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Void result) {
+                C_Adapter = new ChatsTitleAdapter(getActivity() != null ? getActivity() : null, list );
+                LVMain = Objects.requireNonNull(getView()).findViewById( R.id.list );
+                LVMain.setAdapter( C_Adapter );
+            }
+        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+    }*/
+    /*@SuppressLint("UseRequireInsteadOfGet")//работает ну оооочень долго
+    private void refreshTitleList() {
+        new AsyncTask<Void, Void, Void>() {
+            ArrayList<TitleChatsItems> list;
+            @Override
+            protected Void doInBackground(Void... params) {
+                list = DBManager.getInstance( getActivity() ).getAllContacts();
+                for (TitleChatsItems item : list) {
+                    try {
+                        Socket socket = new Socket(item.getIp_adr(), Integer.parseInt(item.getPort()));
+                        socket.setSoTimeout(100);//100ms
+                        System.out.println("Port is available");
+                        socket.close();
+                        socket.close();
+                        item.setOnline(true);
+                    } catch (IOException e) {
+                        System.out.println("Port is not available");
+                        item.setOnline(false);
+                    }
+                }
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Void result) {
+                C_Adapter = new ChatsTitleAdapter(getActivity() != null ? getActivity() : null, list );
+                LVMain = Objects.requireNonNull(getView()).findViewById( R.id.list );
+                LVMain.setAdapter( C_Adapter );
+            }
+        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+    }*/
+
+
+
+    @SuppressLint("UseRequireInsteadOfGet")
+    private void refreshTitleList() {
+        ExecutorService executor = Executors.newFixedThreadPool(14);
+        ArrayList<TitleChatsItems> list = DBManager.getInstance( getActivity() ).getAllContacts();
+        for (TitleChatsItems item : list) {
+            executor.execute(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        Socket socket = new Socket(item.getIp_adr(), Integer.parseInt(item.getPort()));
+                        System.out.println("Port is available");
+                        socket.close();
+                        item.setPortOnline(true);
+                    } catch (IOException e) {
+                        System.out.println("Port is not available");
+                        item.setPortOnline(false);
+                    }
+                    try {
+                        InetAddress.getByName(item.getIp_adr());
+                        System.out.println("Port is available");
+                        item.setIpOnline(true);
+                    } catch (IOException e) {
+                        System.out.println("Port is not available");
+                        item.setIpOnline(false);
+                    }
+
+                }
+            });
+        }
+        executor.shutdown();
+        try {
+            executor.awaitTermination(Long.MIN_VALUE, TimeUnit.MICROSECONDS);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        C_Adapter = new ChatsTitleAdapter(getActivity() != null ? getActivity() : null, list );
+        LVMain = Objects.requireNonNull(getView()).findViewById( R.id.list );
         LVMain.setAdapter( C_Adapter );
     }
+
+
+
 
     public void openAddDialog() {
         LayoutInflater dlgInfater = (LayoutInflater) (getActivity() != null ? getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE) : null);

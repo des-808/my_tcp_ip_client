@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.des808.my_tcp_ip_client.R;
@@ -34,6 +35,8 @@ public class ChatsTitleAdapter extends BaseAdapter {
     @Override
     public long getItemId(int position){return 0;}
 
+
+
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         View view = convertView;
@@ -42,9 +45,19 @@ public class ChatsTitleAdapter extends BaseAdapter {
         }
         final TitleChatsItems item = data.get( position );
 
+        ImageView connect_port_image = (ImageView) view.findViewById( (R.id.connect_port_image) );
+        connect_port_image.setImageResource( R.drawable.yellow_dot );
+        ImageView connect_ip_image = (ImageView) view.findViewById( (R.id.connect_ip_image) );
+        connect_ip_image.setImageResource( R.drawable.yellow_dot );
         TextView textname = (TextView) view.findViewById( R.id.row_name );
         TextView textipadr = (TextView) view.findViewById( R.id.row_ipadress );
         TextView textport = (TextView) view.findViewById( R.id.row_port );
+
+        if(item.getPortOnline())connect_port_image.setImageResource( R.drawable.green_dot );
+        else connect_port_image.setImageResource( R.drawable.red_dot );
+
+        if(item.getIpOnline())connect_ip_image.setImageResource( R.drawable.green_dot );
+        else connect_ip_image.setImageResource( R.drawable.red_dot );
 
         textname.setText( item.getName() );
         textipadr.setText( item.getIp_adr() );

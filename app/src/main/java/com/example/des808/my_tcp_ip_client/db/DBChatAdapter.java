@@ -54,6 +54,7 @@ public class DBChatAdapter {
                 DBChatHelper.MESSAGE_OUT + " TEXT);");
         //closeBd();
     }
+    public void createTableChatList() {}
 
     @SuppressLint("Range")
     public ArrayList<Chat> getMessages() {
